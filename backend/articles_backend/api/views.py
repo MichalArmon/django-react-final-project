@@ -6,6 +6,8 @@ import pandas as pd
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from .serializers import UserSerializer
+from django.contrib.auth.models import User
 
 # הנתיב לתיקייה שבה נמצאים קובצי המודל
 MODELS_DIR = Path(__file__).resolve().parent / "ml_models"
@@ -62,3 +64,23 @@ def predict_views(request):
             {"error": "All input fields must contain valid values."},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+@api_view(["GET", "POST"])
+def users(request):
+    if request.method == "GET":
+        users_queryset = User.objects.select_related("profile").all()
+
+        serializer = UserSerializer(users_queryset, many=True)
+
+        return Response(serializer.data)
+
+    if request.method == "POST":
+        serializer = UserSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

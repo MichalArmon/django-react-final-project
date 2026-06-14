@@ -2,6 +2,18 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    bio = models.TextField(blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    age = models.IntegerField(null=True, blank=True)
+    experience_years = models.IntegerField(default=0)
+    role = models.CharField(max_length=50, default="reader")
+
+    def __str__(self):
+        return self.user.username
+
+
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -23,7 +35,7 @@ class Article(models.Model):
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
     word_count = models.IntegerField(default=0)
-    reading_time = models.IntegerField(default=1)
+
     is_breaking_news = models.BooleanField(default=False)
 
     def __str__(self):
