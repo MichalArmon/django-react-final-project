@@ -28,7 +28,8 @@ function Main() {
       {articles.map((article) => (
         <div key={article.id}>
           <h2>{article.title}</h2>
-          <p>{article.author.name}</p>
+          <p>{article.author_username}</p>
+          <p>{article.content}</p>
           {/* <p>{book.price}</p> */}
         </div>
       ))}
