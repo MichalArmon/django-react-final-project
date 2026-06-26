@@ -8,16 +8,13 @@ const baseTypography = {
   fontFamily: `"Wix Madefor Display", system-ui, "Segoe UI", Arial, sans-serif`,
 };
 
-
-palette: {
-  mode: "light",
-}
 /* ------------------------------
    🎨 Resort Theme – חמים ואלגנטי
 -------------------------------- */
 let themeResort = createTheme({
   typography: baseTypography,
   palette: {
+    mode: "light",
     primary: { main: "#7f6a58" }, // חום־זהוב טבעי
     secondary: { main: "#c8b6a6" },
     background: { default: "#f9f7ef" },
