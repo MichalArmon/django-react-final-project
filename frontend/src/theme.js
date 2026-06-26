@@ -8,6 +8,10 @@ const baseTypography = {
   fontFamily: `"Wix Madefor Display", system-ui, "Segoe UI", Arial, sans-serif`,
 };
 
+
+palette: {
+  mode: "light",
+}
 /* ------------------------------
    🎨 Resort Theme – חמים ואלגנטי
 -------------------------------- */
