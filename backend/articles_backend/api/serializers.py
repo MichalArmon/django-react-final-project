@@ -80,7 +80,6 @@ class ArticleSerializer(serializers.ModelSerializer):
             "views",
             "likes",
             "word_count",
-            "reading_time",
             "is_breaking_news",
             "comments",
         )

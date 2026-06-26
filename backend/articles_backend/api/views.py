@@ -1,4 +1,5 @@
 from pathlib import Path
+from rest_framework.response import Response
 
 import joblib
 import pandas as pd
@@ -7,8 +8,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserSerializer
+from .serializers import UserSerializer, ArticleSerializer
 from django.contrib.auth.models import User
+from .models import Article
 
 # הנתיב לתיקייה שבה נמצאים קובצי המודל
 MODELS_DIR = Path(__file__).resolve().parent / "ml_models"
@@ -18,6 +20,13 @@ model = joblib.load(MODELS_DIR / "article_views_model.pkl")
 
 # טעינת רשימת העמודות ובדיוק הסדר שבו המודל אומן
 feature_columns = joblib.load(MODELS_DIR / "article_views_features.pkl")
+
+
+@api_view(["GET"])
+def articles(request):
+    articles = Article.objects.all()
+    serializer = ArticleSerializer(articles, many=True)
+    return Response(serializer.data)
 
 
 @api_view(["POST"])

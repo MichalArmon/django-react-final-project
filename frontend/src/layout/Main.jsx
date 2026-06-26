@@ -24,7 +24,7 @@ function Main() {
   }, []);
 
   return (
-    <Container sx={{ bgcolor: "background.default", height: "1500px" }}>
+    <Container sx={{ height: "1500px" }}>
       {books.map((book) => (
         <div key={book.id}>
           <h2>{book.title}</h2>
