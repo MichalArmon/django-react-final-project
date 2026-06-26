@@ -2,34 +2,34 @@ import { Container } from "@mui/material";
 import { useEffect, useState } from "react";
 
 Container;
-async function fetchbooks() {
-  const response = await fetch("http://localhost:8000/api/books/");
+async function fetchArticles() {
+  const response = await fetch("http://localhost:8000/api/articles/");
   if (!response.ok) {
-    throw new Error(`שגיאה: ${response.status}`);
+    throw new Error(`error ${response.status}`);
   }
-  const books = await response.json();
-  console.log(books);
-  return books;
+  const articles = await response.json();
+  console.log(articles);
+  return articles;
 }
 
 function Main() {
-  const [books, setBooks] = useState([]);
+  const [articles, setArticles] = useState([]);
 
   useEffect(() => {
-    async function loadBooks() {
-      const data = await fetchbooks();
-      setBooks(data);
+    async function loadArticles() {
+      const data = await fetchArticles();
+      setArticles(data);
     }
-    loadBooks();
+    loadArticles();
   }, []);
 
   return (
     <Container sx={{ height: "1500px" }}>
-      {books.map((book) => (
-        <div key={book.id}>
-          <h2>{book.title}</h2>
-          <p>{book.author.name}</p>
-          <p>{book.price}</p>
+      {articles.map((article) => (
+        <div key={article.id}>
+          <h2>{article.title}</h2>
+          <p>{article.author.name}</p>
+          {/* <p>{book.price}</p> */}
         </div>
       ))}
     </Container>
