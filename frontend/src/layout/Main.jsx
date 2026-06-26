@@ -1,5 +1,6 @@
 import { Container } from "@mui/material";
 import { useEffect, useState } from "react";
+import ArticleCard from "../components/ArticleCard";
 
 Container;
 async function fetchArticles() {
