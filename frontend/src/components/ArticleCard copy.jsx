@@ -57,6 +57,9 @@ export default function ArticleCard({ article, onOpen }) {
   const visibleTags = tags.slice(0, 3);
   const extraTags = Math.max(0, tags.length - visibleTags.length);
 
+  title1=t
+
+[]
   return (
     <Card
       elevation={0}

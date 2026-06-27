@@ -53,6 +53,7 @@ function ArticleCard({ article }) {
     comments = [],
     is_breaking_news = false,
   } = article;
+  const titleFixed = title.split("#")[0];
   return (
     <Card
       elevation={0}
@@ -137,6 +138,24 @@ function ArticleCard({ article }) {
               />
             )}
           </Stack>
+          <Box>
+            <Typography
+              variant="h5"
+              component="h2"
+              sx={{
+                fontWeight: 700,
+                lineHeight: 1.25,
+                color: "text.primary",
+                mb: 1.2,
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+                overflow: "hidden",
+              }}
+            >
+              {titleFixed}
+            </Typography>
+          </Box>
         </Stack>
       </CardContent>
       hello
