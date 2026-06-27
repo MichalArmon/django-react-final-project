@@ -25,14 +25,9 @@ function Main() {
   }, []);
 
   return (
-    <Container sx={{ height: "1500px" }}>
+    <Container>
       {articles.map((article) => (
-        <div key={article.id}>
-          <h2>{article.title}</h2>
-          <p>{article.author_username}</p>
-          <p>{article.content}</p>
-          {/* <p>{book.price}</p> */}
-        </div>
+        <ArticleCard article={article} />
       ))}
     </Container>
   );
