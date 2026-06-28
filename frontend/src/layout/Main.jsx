@@ -1,6 +1,6 @@
 import { Container, Box } from "@mui/material";
 
-import ArticlesPage from "../components/ArticlesPage";
+import ArticlesPage from "../components/articles/ArticlesPage";
 
 function Main() {
   return (
