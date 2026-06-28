@@ -2,13 +2,24 @@ import {
   Avatar,
   Box,
   Card,
+  CardActions,
   CardContent,
   Chip,
+  Divider,
+  IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
-import { BoltRounded, VisibilityOutlined } from "@mui/icons-material";
+import {
+  AccessTimeRounded,
+  ArrowForwardRounded,
+  BoltRounded,
+  CheckBoxOutlineBlankRounded,
+  FavoriteBorderRounded,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 
 function formatDate(dateString) {
   if (!dateString) {
@@ -40,7 +51,20 @@ function calculateReadingTime(wordCount = 0) {
   return minimumReadingTime;
 }
 
-function ArticleCard({ article }) {
+function formatNumber(value = 0) {
+  if (value >= 1000) {
+    const formatter = new Intl.NumberFormat("en", {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    });
+
+    return formatter.format(value);
+  }
+
+  return value.toString();
+}
+
+function ArticleCard({ article, onOpen }) {
   const {
     title,
     content,
@@ -174,7 +198,8 @@ function ArticleCard({ article }) {
           <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
             {visibleTags.map((tag) => (
               <Chip
-                label={typeof tag === "object" ? tag.name : tag}
+                label={tag.name}
+                key={tag.id}
                 size="small"
                 sx={{
                   borderRadius: 2,
@@ -188,7 +213,66 @@ function ArticleCard({ article }) {
           </Stack>
         </Stack>
       </CardContent>
-      hello
+      <Divider />
+      <CardActions
+        sx={{
+          px: 3,
+          py: 1.8,
+          justifyContent: "space-between",
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          sx={{ color: "text.secondary" }}
+        >
+          <Tooltip title="Views">
+            <Stack direction="row" spacing={0.6} alignItems="center">
+              <VisibilityOutlined sx={{ fontSize: 18 }} />
+              <Typography variant="caption">{formatNumber(views)}</Typography>
+            </Stack>
+          </Tooltip>
+
+          <Tooltip title="Likes">
+            <Stack direction="row" spacing={0.6} alignItems="center">
+              <FavoriteBorderRounded sx={{ fontSize: 18 }} />
+              <Typography variant="caption">{formatNumber(likes)}</Typography>
+            </Stack>
+          </Tooltip>
+
+          <Tooltip title="Comments">
+            <Stack direction="row" spacing={0.6} alignItems="center">
+              <CheckBoxOutlineBlankRounded sx={{ fontSize: 17 }} />
+              <Typography variant="caption">{comments.length}</Typography>
+            </Stack>
+          </Tooltip>
+
+          <Tooltip title="Reading time">
+            <Stack direction="row" spacing={0.6} alignItems="center">
+              <AccessTimeRounded sx={{ fontSize: 18 }} />
+              <Typography variant="caption">
+                {calculateReadingTime(word_count)} min
+              </Typography>
+            </Stack>
+          </Tooltip>
+        </Stack>
+        <Tooltip title="Read article">
+          <IconButton
+            onClick={() => onOpen?.(article)}
+            sx={{
+              color: "primary.main",
+              border: "1px solid",
+              borderColor: "divider",
+              "&:hover": {
+                backgroundColor: "rgba(47, 10, 69, 0.06)",
+              },
+            }}
+          >
+            <ArrowForwardRounded />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
     </Card>
   );
 }

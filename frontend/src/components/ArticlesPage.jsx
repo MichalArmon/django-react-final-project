@@ -1,16 +1,36 @@
 import { Box, Container, Typography } from "@mui/material";
-import ArticleCard from "./components/ArticleCard";
+import ArticleCard from "./ArticleCard";
+import { useState, useEffect } from "react";
 
-export default function ArticlesPage({ articles }) {
+async function fetchArticles() {
+  const response = await fetch("http://localhost:8000/api/articles/");
+  if (!response.ok) {
+    throw new Error(`error ${response.status}`);
+  }
+  const articlesSet = await response.json();
+  console.log(articlesSet);
+  return articlesSet;
+}
+
+export default function ArticlesPage() {
+  const [articles, setArticles] = useState([]);
   const handleOpenArticle = (article) => {
     console.log("Open article:", article);
   };
+
+  useEffect(() => {
+    async function loadArticles() {
+      const data = await fetchArticles();
+      setArticles(data);
+    }
+    loadArticles();
+  }, []);
 
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "background.default",
+
         py: { xs: 4, md: 7 },
       }}
     >
