@@ -155,6 +155,19 @@ function ArticleCard({ article }) {
             >
               {titleFixed}
             </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                lineHeight: 1.75,
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 3,
+                overflow: "hidden",
+              }}
+            >
+              {content}
+            </Typography>
           </Box>
         </Stack>
       </CardContent>
