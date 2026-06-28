@@ -174,7 +174,7 @@ function ArticleCard({ article }) {
           <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
             {visibleTags.map((tag) => (
               <Chip
-                label={tag}
+                label={typeof tag === "object" ? tag.name : tag}
                 size="small"
                 sx={{
                   borderRadius: 2,
