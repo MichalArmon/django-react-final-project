@@ -54,6 +54,8 @@ function ArticleCard({ article }) {
     is_breaking_news = false,
   } = article;
   const titleFixed = title.split("#")[0];
+  const visibleTags = tags.slice(0, 3);
+  const extraTags = Math.max(0, tags.length - visibleTags.length);
   return (
     <Card
       elevation={0}
@@ -169,6 +171,21 @@ function ArticleCard({ article }) {
               {content}
             </Typography>
           </Box>
+          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+            {visibleTags.map((tag) => (
+              <Chip
+                label={tag}
+                size="small"
+                sx={{
+                  borderRadius: 2,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "primary.main",
+                  backgroundColor: "rgba(186, 104, 200, 0.12)",
+                }}
+              />
+            ))}
+          </Stack>
         </Stack>
       </CardContent>
       hello
