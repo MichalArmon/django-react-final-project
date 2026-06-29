@@ -1,3 +1,4 @@
+import { LoopOutlined } from "@mui/icons-material";
 import {
   Grid,
   Button,
@@ -7,7 +8,9 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
+
 import { useNavigate } from "react-router-dom";
+import FormButton from "./FormButton";
 
 function Form({
   title = "",
@@ -54,13 +57,25 @@ function Form({
       <Grid container spacing={1} my={2} direction="row" width="100%">
         <Grid item xs={12} sm={6}>
           {" "}
-          <Button
-            node="cencel"
+          <FormButton
+            node="cancel"
             color="error"
             component="div"
             variant="outlined"
             onClick={() => navigate(to)}
-          ></Button>
+          ></FormButton>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          {" "}
+          <FormButton
+            node={<LoopOutlined />}
+            component="div"
+            variant="outlined"
+            onClick={onReset}
+          ></FormButton>
+        </Grid>
+        <Grid item xs={12}>
+          <FormButton node="Submit" onClick={onSubmit} size="large" />
         </Grid>
       </Grid>
     </Box>
