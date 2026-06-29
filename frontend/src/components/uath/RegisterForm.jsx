@@ -5,7 +5,13 @@ function RegisterForm() {
   return (
     <Form>
       <Grid item xs={12} md={6}>
-        <TextField label="First name" fullWidth />
+        <TextField
+          label="First name"
+          fullWidth
+          onChange={(e) => {
+            console.log(e.target.value);
+          }}
+        />
       </Grid>
       <Grid item xs={12} md={6}>
         <TextField label="Last name" fullWidth />
