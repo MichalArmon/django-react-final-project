@@ -1,7 +1,9 @@
 import { AccountCircle } from "@mui/icons-material";
 import { AppBar, Box, IconButton, Tooltip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const navigate = useNavigate("");
   return (
     <AppBar
       elevation={0}
@@ -30,6 +32,7 @@ function Navbar() {
                 backgroundColor: "transparent",
               },
             }}
+            onClick={() => navigate("/register")}
           >
             <AccountCircle sx={{ fontSize: "2rem" }} />
           </IconButton>

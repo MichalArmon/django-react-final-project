@@ -1,12 +1,11 @@
 import { Container, Box } from "@mui/material";
-
-import ArticlesPage from "../components/articles/ArticlesPage";
+import { Outlet } from "react-router-dom";
 
 function Main() {
   return (
     <Container>
       <Box sx={{ mt: 10 }}>
-        <ArticlesPage />
+        <Outlet />
       </Box>
     </Container>
   );
