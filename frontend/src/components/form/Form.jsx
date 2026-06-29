@@ -27,7 +27,6 @@ function Form({
     <Box
       component="form"
       color={color}
-      sx={{ width: "100%", mt: 2, p: { xs: 1, sm: 2 }, ...styles }}
       onSubmit={onSubmit}
       autoComplete="off"
       noValidate
@@ -54,28 +53,29 @@ function Form({
       <Grid container spacing={spacing}>
         {children}
       </Grid>
-      <Grid container spacing={1} my={2} direction="row" width="100%">
+      <Grid container spacing={spacing} my={2}>
         <Grid item xs={12} sm={6}>
-          {" "}
           <FormButton
             node="cancel"
             color="error"
-            component="div"
             variant="outlined"
             onClick={() => navigate(to)}
-          ></FormButton>
+          />
         </Grid>
         <Grid item xs={12} sm={6}>
-          {" "}
           <FormButton
             node={<LoopOutlined />}
-            component="div"
             variant="outlined"
             onClick={onReset}
-          ></FormButton>
+          />
         </Grid>
-        <Grid item xs={12}>
-          <FormButton node="Submit" onClick={onSubmit} size="large" />
+        <Grid item xs={12} my={2}>
+          <FormButton
+            node="Submit"
+            onClick={onSubmit}
+            size="large"
+            styles={{ py: 2 }}
+          />
         </Grid>
       </Grid>
     </Box>

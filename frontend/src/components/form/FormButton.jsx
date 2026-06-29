@@ -8,9 +8,11 @@ function FormButton({
   onClick,
   disable = false,
   node,
+  styles = {},
 }) {
   return (
     <Button
+      Width="100%"
       variant={variant}
       component={component}
       size={size}
@@ -18,6 +20,7 @@ function FormButton({
       onClick={onClick}
       disable={disable}
       fullWidth
+      sx={{ py: 1, ...styles }}
     >
       {node}
     </Button>
