@@ -27,13 +27,30 @@ function RegisterForm() {
         />
       </Grid>
       <Grid item xs={12} md={6}>
-        <TextField label="Last name" fullWidth />
+        <TextField
+          label="Last name"
+          name="lastName"
+          fullWidth
+          onChange={handleChange}
+        />
       </Grid>
       <Grid item xs={12} md={6}>
-        <TextField label="Email" fullWidth />
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          onChange={handleChange}
+          fullWidth
+        />
       </Grid>
       <Grid item xs={12} md={6}>
-        <TextField label="Password" type="password" fullWidth />
+        <TextField
+          label="Password"
+          type="password"
+          name="password"
+          fullWidth
+          onChange={handleChange}
+        />
       </Grid>
     </Form>
   );
