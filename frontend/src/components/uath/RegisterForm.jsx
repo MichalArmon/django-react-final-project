@@ -10,16 +10,20 @@ function RegisterForm() {
   const handleSignUp = () => {
     console.log(userDetails);
   };
+  const handleChange = (e) => {
+    const { value, name } = e.target;
+    setUserDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <Form onSubmit={handleSignUp}>
       <Grid item xs={12} md={6}>
         <TextField
           label="First name"
+          name="firstName"
+          value={userDetails.firstName}
           fullWidth
-          onChange={(e) => {
-            setUserDetails((prev) => ({ ...prev, firstName: e.target.value }));
-            console.log(e.target.value);
-          }}
+          onChange={handleChange}
         />
       </Grid>
       <Grid item xs={12} md={6}>
