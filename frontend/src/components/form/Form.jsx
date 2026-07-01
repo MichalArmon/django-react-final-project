@@ -39,7 +39,7 @@ function Form({
           color: "text.primary",
         }}
       >
-        Register
+        Register balallala
       </Typography>
 
       <Typography
