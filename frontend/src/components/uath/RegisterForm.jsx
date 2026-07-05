@@ -4,6 +4,7 @@ import { useState } from "react";
 import Joi from "joi";
 
 function RegisterForm() {
+  const [errors, setErrors] = useState({});
   const [userDetails, setUserDetails] = useState({
     firstName: "",
     lastName: "",
@@ -13,6 +14,7 @@ function RegisterForm() {
     firstName: Joi.string().min(2).max(100),
     lastName: Joi.string().min(2).max(100),
   });
+
   const handleSignUp = () => {
     console.log(userDetails);
     const { error } = schema.validate(userDetails, { abortEarly: false });
@@ -21,6 +23,13 @@ function RegisterForm() {
   const handleChange = (e) => {
     const { value, name } = e.target;
     setUserDetails((prev) => ({ ...prev, [name]: value }));
+    const fieldSchema = schema.extract(name);
+    const { error } = fieldSchema.validate(value);
+    console.log(error);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error ? error.details[0].message : "",
+    }));
   };
 
   return (
@@ -32,6 +41,8 @@ function RegisterForm() {
           value={userDetails.firstName}
           fullWidth
           onChange={handleChange}
+          error={Boolean(errors.firstName)}
+          helperText={errors.firstName}
         />
       </Grid>
       <Grid item xs={12} md={6}>
