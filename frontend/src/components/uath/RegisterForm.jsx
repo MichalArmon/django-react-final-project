@@ -1,14 +1,22 @@
 import { Grid, TextField } from "@mui/material";
 import Form from "../form/Form";
 import { useState } from "react";
+import Joi from "joi";
 
 function RegisterForm() {
   const [userDetails, setUserDetails] = useState({
     firstName: "",
     lastName: "",
   });
+
+  const schema = Joi.object({
+    firstName: Joi.string().min(2).max(100),
+    lastName: Joi.string().min(2).max(100),
+  });
   const handleSignUp = () => {
     console.log(userDetails);
+    const { error } = schema.validate(userDetails, { abortEarly: false });
+    console.log(error);
   };
   const handleChange = (e) => {
     const { value, name } = e.target;
