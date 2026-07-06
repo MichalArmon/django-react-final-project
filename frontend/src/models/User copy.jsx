@@ -1,8 +1,6 @@
 import Joi from "joi";
 
 const User = Joi.object({
-  username: Joi.string().min(3).max(30).required(),
-
   password: Joi.string().min(8).max(100).required(),
 
   email: Joi.string()
