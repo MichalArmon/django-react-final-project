@@ -3,10 +3,11 @@ import Form from "../form/Form";
 import { useState } from "react";
 import useForm from "../../hooks/useForm";
 import User from "../../models/User";
+import initialUserData from "../../initialData/initialUserData";
 
 function RegisterForm() {
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
-    initialValues,
+    initialUserData,
     User,
   );
   return (
