@@ -1,44 +1,21 @@
 import { Grid, TextField } from "@mui/material";
 import Form from "../form/Form";
 import { useState } from "react";
-import Joi from "joi";
+import useForm from "../../hooks/useForm";
+import User from "../../models/User";
 
 function RegisterForm() {
-  const [errors, setErrors] = useState({});
-  const [userDetails, setUserDetails] = useState({
-    firstName: "",
-    lastName: "",
-  });
-
-  const schema = Joi.object({
-    firstName: Joi.string().min(2).max(100),
-    lastName: Joi.string().min(2).max(100),
-  });
-
-  const handleSignUp = () => {
-    console.log(userDetails);
-    const { error } = schema.validate(userDetails, { abortEarly: false });
-    console.log(error);
-  };
-  const handleChange = (e) => {
-    const { value, name } = e.target;
-    setUserDetails((prev) => ({ ...prev, [name]: value }));
-    const fieldSchema = schema.extract(name);
-    const { error } = fieldSchema.validate(value);
-    console.log(error);
-    setErrors((prev) => ({
-      ...prev,
-      [name]: error ? error.details[0].message : "",
-    }));
-  };
-
+  const { handleChange, handleSubmit, errors, formDetails } = useForm(
+    initialValues,
+    User,
+  );
   return (
-    <Form onSubmit={handleSignUp}>
+    <Form onSubmit={handleSubmit}>
       <Grid item xs={12} md={6}>
         <TextField
           label="First name"
           name="firstName"
-          value={userDetails.firstName}
+          value={formDetails.firstName}
           fullWidth
           onChange={handleChange}
           error={Boolean(errors.firstName)}
