@@ -4,11 +4,14 @@ import { useState } from "react";
 import useForm from "../../hooks/useForm";
 import User from "../../models/User";
 import initialUserData from "../../initialData/initialUserData";
+import { useUser } from "../../providers/UserProvider";
 
 function RegisterForm() {
+  const { handleSubmitCreateUser } = useUser();
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
     initialUserData,
     User,
+    handleSubmitCreateUser,
   );
   return (
     <Form onSubmit={handleSubmit}>

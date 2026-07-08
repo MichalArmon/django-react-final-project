@@ -1,31 +1,41 @@
 import { createContext, useContext, useState } from "react";
+import axios from "axios";
+import userToServer from "../normalization/userForServer";
 
 const UserContext = createContext();
 
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(null);
+  const URL = "http://localhost:8000/api";
 
   // ✔️✔️✔️register User ✔️✔️✔️
 
   const handleSubmitCreateUser = async (data) => {
-    const userDetailsForServer = normalizeRegisterDetails(data);
+    const userDetailsForServer = userToServer(data);
 
     try {
-      const response = await axios.post(`${URL}/users`, userDetailsForServer);
+      const response = await axios.post(`${URL}/users/`, userDetailsForServer);
       console.log(response);
-      getUsersFromServer();
-      setOpenSignup(false);
-      setSnack("success", "Account created successfully!");
-      await handleSubmitLoginUser(userDetailsForServer);
+
+      // setSnack("success", "Account created successfully!");
+      // await handleSubmitLoginUser(userDetailsForServer);
     } catch (error) {
-      setSnack("error", error.response.data);
+      // setSnack("error", error.response.data);
       if (error.response) {
         console.log(error.response.data);
       }
     }
   };
 
-  return {};
+  return (
+    <UserContext.Provider
+      value={{
+        handleSubmitCreateUser,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
 }
 
 export const useUser = () => {
