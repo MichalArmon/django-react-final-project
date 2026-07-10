@@ -62,6 +62,8 @@ export default function UserProvider({ children }) {
       value={{
         handleSubmitCreateUser,
         handleSubmitLoginUser,
+        user,
+        setUser,
       }}
     >
       {children}
