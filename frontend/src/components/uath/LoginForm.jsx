@@ -8,11 +8,11 @@ import Login from "../../models/Login";
 import loginInitialUserData from "../../initialData/loginInitialUserData";
 
 function LoginForm() {
-  const { handleSubmitCreateUser } = useUser();
+  const { handleSubmitLoginUser } = useUser();
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
     loginInitialUserData,
     Login,
-    handleSubmitCreateUser,
+    handleSubmitLoginUser,
   );
   return (
     <Form onSubmit={handleSubmit}>

@@ -2,6 +2,10 @@ import { createContext, useContext, useState } from "react";
 import axios from "axios";
 import userToServer from "../normalization/userForServer";
 import loginUserToServer from "../normalization/loginForServer";
+import {
+  getUser,
+  setTokenInLocalStorage,
+} from "../services/localStorageService";
 
 const UserContext = createContext();
 
