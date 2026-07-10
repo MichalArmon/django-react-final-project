@@ -9,7 +9,7 @@ urlpatterns = [
     path("articles/", views.articles, name="articles"),
     path("users/", views.users, name="users"),
     path(
-        "login/",
+        "users/login/",
         TokenObtainPairView.as_view(),
         name="token_obtain_pair",
     ),

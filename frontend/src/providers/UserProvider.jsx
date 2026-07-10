@@ -38,10 +38,10 @@ export default function UserProvider({ children }) {
     console.log("loginUserDetailsForServer:", loginUserDetailsForServer);
     try {
       const response = await axios.post(
-        `${URL}/users/login`,
+        `${URL}/users/login/`,
         loginUserDetailsForServer,
       );
-      const token = response.data;
+      const token = response.data.access;
       setTokenInLocalStorage(token);
       const user = getUser(response.data);
       console.log(user);
