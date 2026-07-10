@@ -1,17 +1,17 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Grid, TextField } from "@mui/material";
 import Form from "../form/Form";
 import { useState } from "react";
 import useForm from "../../hooks/useForm";
-import User from "../../models/User";
-import initialUserData from "../../initialData/initialUserData";
-import { useUser } from "../../providers/UserProvider";
-import { Link } from "react-router-dom";
 
-function RegisterForm() {
+import { useUser } from "../../providers/UserProvider";
+import Login from "../../models/Login";
+import loginInitialUserData from "../../initialData/loginInitialUserData";
+
+function LoginForm() {
   const { handleSubmitCreateUser } = useUser();
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
-    initialUserData,
-    User,
+    loginInitialUserData,
+    Login,
     handleSubmitCreateUser,
   );
   return (
@@ -120,31 +120,8 @@ function RegisterForm() {
           helperText={errors.role}
         />
       </Grid>
-      <Grid item xs={12}>
-        <Typography
-          variant="body2"
-          align="center"
-          sx={{
-            mt: 2,
-            color: "text.secondary",
-          }}
-        >
-          Already have an account?{" "}
-          <Link
-            component={Link}
-            to="/login"
-            underline="hover"
-            sx={{
-              fontWeight: 600,
-              color: "primary.main",
-            }}
-          >
-            Sign in
-          </Link>
-        </Typography>
-      </Grid>
     </Form>
   );
 }
 
-export default RegisterForm;
+export default LoginForm;
