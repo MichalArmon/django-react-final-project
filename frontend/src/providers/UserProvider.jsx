@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import axios from "axios";
 import userToServer from "../normalization/userForServer";
+import loginUserToServer from "../normalization/loginForServer";
 
 const UserContext = createContext();
 
@@ -29,7 +30,7 @@ export default function UserProvider({ children }) {
 
   // ✔️✔️✔️LOGIN ✔️✔️✔️
   const handleSubmitLoginUser = async (data) => {
-    const loginUserDetailsForServer = normalizeLoginDetails(data);
+    const loginUserDetailsForServer = loginUserToServer(data);
     console.log("loginUserDetailsForServer:", loginUserDetailsForServer);
     try {
       const response = await axios.post(
@@ -40,12 +41,12 @@ export default function UserProvider({ children }) {
       setTokenInLocalStorage(token);
       const user = getUser(response.data);
       console.log(user);
-      setOpenLogin(false);
+      // setOpenLogin(false);
       setUser(user);
-      handleGetUserFavorites();
-      setSnack("success", "You are Logged in successfully!");
+      // handleGetUserFavorites();
+      // setSnack("success", "You are Logged in successfully!");
     } catch (error) {
-      setSnack("error", error.response.data.message);
+      // setSnack("error", error.response.data.message);
       if (error.response) {
         console.log(error.response.data);
       }
@@ -56,6 +57,7 @@ export default function UserProvider({ children }) {
     <UserContext.Provider
       value={{
         handleSubmitCreateUser,
+        handleSubmitLoginUser,
       }}
     >
       {children}
