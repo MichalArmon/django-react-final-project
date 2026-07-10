@@ -27,6 +27,31 @@ export default function UserProvider({ children }) {
     }
   };
 
+  // ✔️✔️✔️LOGIN ✔️✔️✔️
+  const handleSubmitLoginUser = async (data) => {
+    const loginUserDetailsForServer = normalizeLoginDetails(data);
+    console.log("loginUserDetailsForServer:", loginUserDetailsForServer);
+    try {
+      const response = await axios.post(
+        `${URL}/users/login`,
+        loginUserDetailsForServer,
+      );
+      const token = response.data;
+      setTokenInLocalStorage(token);
+      const user = getUser(response.data);
+      console.log(user);
+      setOpenLogin(false);
+      setUser(user);
+      handleGetUserFavorites();
+      setSnack("success", "You are Logged in successfully!");
+    } catch (error) {
+      setSnack("error", error.response.data.message);
+      if (error.response) {
+        console.log(error.response.data);
+      }
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
