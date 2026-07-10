@@ -15,7 +15,7 @@ function LoginForm() {
     handleSubmitLoginUser,
   );
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} title="Signin">
       <Grid item xs={12}>
         <TextField
           label="Email"

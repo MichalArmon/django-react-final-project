@@ -15,7 +15,7 @@ function RegisterForm() {
     handleSubmitCreateUser,
   );
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} title="Register">
       <Grid item xs={12} md={6}>
         <TextField
           label="First name"
