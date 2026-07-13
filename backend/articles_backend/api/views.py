@@ -123,3 +123,40 @@ class ProductListCreate(ListCreateAPIView):
 class ProductDetails(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+class ArticlesListCreate(ListCreateAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+
+    filter_backends = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    ]
+
+    filterset_fields = [
+        "tags",
+        "author__username",
+    ]
+
+    search_fields = [
+        "title",
+        "content",
+        "author__username",
+        "tags__name",
+    ]
+
+    ordering_fields = [
+        "views",
+        "likes",
+        "word_count",
+        "published_at",
+    ]
+
+    ordering = ["likes"]
+
+
+class ArticleDetails(RetrieveUpdateDestroyAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
