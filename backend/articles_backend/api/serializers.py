@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework import serializers
 
-from .models import Article, Tag, Comment, UserProfile
+from .models import Article, Tag, Comment, UserProfile, Product
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -85,3 +85,9 @@ class ArticleSerializer(serializers.ModelSerializer):
             "comments",
         )
         read_only_fields = ("author",)
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = "__all__"

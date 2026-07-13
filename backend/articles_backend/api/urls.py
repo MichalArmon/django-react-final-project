@@ -19,4 +19,9 @@ urlpatterns = [
         name="token_refresh",
     ),
     path("predict-views/", views.predict_views, name="predict-views"),
+    path(
+        "products/",
+        views.ProductListCreate.as_view(),
+        name="products",
+    ),
 ]
