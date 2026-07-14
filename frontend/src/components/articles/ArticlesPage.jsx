@@ -1,38 +1,27 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container, Pagination, Stack, Typography } from "@mui/material";
 import ArticleCard from "./ArticleCard";
 import { useState, useEffect } from "react";
 
-import axios from "axios";
-
-async function fetchArticles() {
-  try {
-    const response = await axios.get("http://localhost:8000/api/articles/");
-
-    console.log(response.data.results);
-    return response.data.results;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Status:", error.response?.status);
-      console.error("Data:", error.response?.data);
-    }
-
-    throw error;
-  }
-}
+import { useArticle } from "../../providers/ArticleProvider";
 
 export default function ArticlesPage() {
-  const [articles, setArticles] = useState([]);
+  const {
+    articles,
+    setArticles,
+    handleGetAllArticles,
+    totalArticles,
+    setTotalArticles,
+  } = useArticle([]);
+  const [page, setPage] = useState(1);
+
+  const pageSize = 9;
   const handleOpenArticle = (article) => {
     console.log("Open article:", article);
   };
 
   useEffect(() => {
-    async function loadArticles() {
-      const data = await fetchArticles();
-      setArticles(data);
-    }
-    loadArticles();
-  }, []);
+    handleGetAllArticles(page);
+  }, [articles, page]);
 
   return (
     <Box
@@ -82,6 +71,14 @@ export default function ArticlesPage() {
             />
           ))}
         </Box>
+        <Stack alignItems="center" sx={{ mt: 4 }}>
+          <Pagination
+            count={Math.ceil(totalArticles / pageSize)}
+            page={page}
+            onChange={(event, value) => setPage(value)}
+            color="primary"
+          />
+        </Stack>
       </Container>
     </Box>
   );
