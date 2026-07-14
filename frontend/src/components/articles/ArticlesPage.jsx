@@ -22,10 +22,6 @@ export default function ArticlesPage() {
   } = useArticle([]);
   const [page, setPage] = useState(1);
 
-  const handleOnChange = (e) => {
-    handleGetFilteredArticles(e.target.value);
-  };
-
   const pageSize = 9;
   const handleOpenArticle = (article) => {
     console.log("Open article:", article);
@@ -33,7 +29,7 @@ export default function ArticlesPage() {
 
   useEffect(() => {
     handleGetAllArticles(page);
-  }, [articles, page]);
+  }, [page]);
 
   return (
     <Box
@@ -63,7 +59,7 @@ export default function ArticlesPage() {
         >
           Discover the newest stories, insights and updates.
         </Typography>
-        <TextField label="search" onChange={handleOnChange} />
+
         <Box
           sx={{
             display: "grid",

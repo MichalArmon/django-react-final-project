@@ -32,10 +32,10 @@ export default function ArticleProvider({ children }) {
   }
 
   // ✔️✔️✔️Filtered articles ✔️✔️✔️
-  async function handleGetFilteredArticles(page = 1, value) {
+  async function handleGetFilteredArticles(value, page = 1) {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/articles?serach=${value}`,
+        `http://localhost:8000/api/articles?search=${value}`,
         {
           params: {
             page: page,

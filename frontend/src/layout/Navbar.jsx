@@ -2,6 +2,8 @@ import { AccountCircle } from "@mui/icons-material";
 import { AppBar, Box, IconButton, Tooltip, Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../providers/UserProvider";
+import SearchBar from "../components/articles/SearchBar";
+
 function Navbar() {
   const { user } = useUser();
   const navigate = useNavigate("");
@@ -22,8 +24,10 @@ function Navbar() {
           display: "flex",
           alignItems: "center",
           px: 2,
+          justifyContent: "space-between",
         }}
       >
+        <SearchBar />
         {user ? (
           <Tooltip title={user.name} arrow>
             <Avatar
