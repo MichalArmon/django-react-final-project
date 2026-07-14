@@ -1,4 +1,11 @@
-import { Box, Container, Pagination, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Pagination,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import ArticleCard from "./ArticleCard";
 import { useState, useEffect } from "react";
 
@@ -11,8 +18,13 @@ export default function ArticlesPage() {
     handleGetAllArticles,
     totalArticles,
     setTotalArticles,
+    handleGetFilteredArticles,
   } = useArticle([]);
   const [page, setPage] = useState(1);
+
+  const handleOnChange = (e) => {
+    handleGetFilteredArticles(e.target.value);
+  };
 
   const pageSize = 9;
   const handleOpenArticle = (article) => {
@@ -51,7 +63,7 @@ export default function ArticlesPage() {
         >
           Discover the newest stories, insights and updates.
         </Typography>
-
+        <TextField label="search" onChange={handleOnChange} />
         <Box
           sx={{
             display: "grid",
