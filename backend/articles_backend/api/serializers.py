@@ -1,8 +1,20 @@
 from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import Article, Tag, Comment, UserProfile, Product
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token["name"] = user.get_full_name() or user.username
+        token["role"] = user.profile.role
+
+        return token
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

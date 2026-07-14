@@ -14,7 +14,13 @@ from rest_framework.generics import (
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserSerializer, ArticleSerializer, ProductSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import (
+    UserSerializer,
+    ArticleSerializer,
+    ProductSerializer,
+    CustomTokenObtainPairSerializer,
+)
 from django.contrib.auth.models import User
 from .models import Article, Product
 
@@ -26,6 +32,10 @@ model = joblib.load(MODELS_DIR / "article_views_model.pkl")
 
 # טעינת רשימת העמודות ובדיוק הסדר שבו המודל אומן
 feature_columns = joblib.load(MODELS_DIR / "article_views_features.pkl")
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 @api_view(["GET"])

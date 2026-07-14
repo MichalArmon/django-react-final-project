@@ -4,13 +4,14 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from .views import CustomTokenObtainPairView
 
 urlpatterns = [
     path("articles/", views.ArticlesListCreate.as_view(), name="articles"),
     path("users/", views.users, name="users"),
     path(
         "users/login/",
-        TokenObtainPairView.as_view(),
+        CustomTokenObtainPairView.as_view(),
         name="token_obtain_pair",
     ),
     path(
