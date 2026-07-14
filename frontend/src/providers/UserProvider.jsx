@@ -2,16 +2,19 @@ import { createContext, useContext, useState } from "react";
 import axios from "axios";
 import userToServer from "../normalization/userForServer";
 import loginUserToServer from "../normalization/loginForServer";
+
 import {
   getUser,
   setTokenInLocalStorage,
 } from "../services/localStorageService";
+import { useNavigate } from "react-router-dom";
 
 const UserContext = createContext();
 
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const URL = "http://localhost:8000/api";
+  const navigate = useNavigate("");
 
   // ✔️✔️✔️register User ✔️✔️✔️
 
@@ -21,6 +24,11 @@ export default function UserProvider({ children }) {
     try {
       const response = await axios.post(`${URL}/users/`, userDetailsForServer);
       console.log(response);
+      data = {
+        email: userDetailsForServer.email,
+        password: userDetailsForServer.password,
+      };
+      await handleSubmitLoginUser(data);
 
       // setSnack("success", "Account created successfully!");
       // await handleSubmitLoginUser(userDetailsForServer);
@@ -47,6 +55,7 @@ export default function UserProvider({ children }) {
       console.log(user);
       // setOpenLogin(false);
       setUser(user);
+      navigate("/");
       // handleGetUserFavorites();
       // setSnack("success", "You are Logged in successfully!");
     } catch (error) {
