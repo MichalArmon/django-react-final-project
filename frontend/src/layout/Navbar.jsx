@@ -18,40 +18,47 @@ function Navbar() {
     >
       <Box
         sx={{
+          height: "100%",
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
           px: 2,
         }}
       >
         {user ? (
-          <Tooltip title={user.username} arrow>
+          <Tooltip title={user.name} arrow>
             <Avatar
               sx={{
-                width: 38,
-                height: 38,
+                width: 40,
+                height: 40,
                 bgcolor: "primary.main",
-                fontSize: "1rem",
+                fontSize: "1.25rem",
                 fontWeight: 700,
                 textTransform: "uppercase",
               }}
             >
-              {user.username?.charAt(0)}
+              {user.name?.charAt(0)}
             </Avatar>
           </Tooltip>
         ) : (
-          <Tooltip title="REGISTER" arrow placement="top">
+          <Tooltip title="REGISTER" arrow placement="bottom">
             <IconButton
               aria-label="Register"
+              onClick={() => navigate("/register")}
               sx={{
-                textTransform: "none",
+                width: 40,
+                height: 40,
+                p: 0,
                 "&:hover": {
                   backgroundColor: "transparent",
                 },
               }}
-              onClick={() => navigate("/register")}
             >
-              <AccountCircle sx={{ fontSize: "2rem" }} />
+              <AccountCircle
+                sx={{
+                  width: 40,
+                  height: 40,
+                }}
+              />
             </IconButton>
           </Tooltip>
         )}
