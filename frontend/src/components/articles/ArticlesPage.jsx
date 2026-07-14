@@ -2,14 +2,22 @@ import { Box, Container, Typography } from "@mui/material";
 import ArticleCard from "./ArticleCard";
 import { useState, useEffect } from "react";
 
+import axios from "axios";
+
 async function fetchArticles() {
-  const response = await fetch("http://localhost:8000/api/articles/");
-  if (!response.ok) {
-    throw new Error(`error ${response.status}`);
+  try {
+    const response = await axios.get("http://localhost:8000/api/articles/");
+
+    console.log(response.data.results);
+    return response.data.results;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Status:", error.response?.status);
+      console.error("Data:", error.response?.data);
+    }
+
+    throw error;
   }
-  const articlesSet = await response.json();
-  console.log(articlesSet);
-  return articlesSet;
 }
 
 export default function ArticlesPage() {
