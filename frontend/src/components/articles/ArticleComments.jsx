@@ -13,7 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import { SendToMobileRounded } from "@mui/icons-material";
+import { useComment } from "../../providers/CommentProvider";
 
 function formatDate(dateString) {
   if (!dateString) return "";
@@ -25,55 +26,8 @@ function formatDate(dateString) {
   }).format(new Date(dateString));
 }
 
-function ArticleComments({ articleId, comments = [], showComments }) {
-  const [currentComments, setCurrentComments] = useState(comments);
-  const [newComment, setNewComment] = useState("");
-  const [isSending, setIsSending] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    setCurrentComments(comments);
-  }, [comments]);
-
-  async function handleAddComment(event) {
-    event.preventDefault();
-
-    const content = newComment.trim();
-
-    if (!content || isSending) return;
-
-    try {
-      setIsSending(true);
-      setError("");
-
-      const token = localStorage.getItem("token");
-
-      const response = await axios.post(
-        "http://localhost:8000/api/comments/",
-        {
-          article: articleId,
-          content,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      setCurrentComments((prev) => [...prev, response.data]);
-      setNewComment("");
-    } catch (error) {
-      console.error(error);
-
-      setError(
-        error.response?.data?.detail || "The comment could not be added.",
-      );
-    } finally {
-      setIsSending(false);
-    }
-  }
-
+function ArticleComments({ articleName, comments = [], showComments }) {
+  const { currentComments, handleAddComment, isSending } = useComment;
   return (
     <Collapse in={showComments} unmountOnExit>
       <Divider />
@@ -86,13 +40,13 @@ function ArticleComments({ articleId, comments = [], showComments }) {
           textAlign: "left",
         }}
       >
-        {currentComments.length === 0 ? (
+        {comments.length === 0 ? (
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             No comments yet. Be the first to comment.
           </Typography>
         ) : (
           <Stack spacing={1.7} sx={{ mb: 2 }}>
-            {currentComments.map((comment) => (
+            {comments.map((comment) => (
               <Stack
                 key={comment.id}
                 direction="row"
@@ -108,7 +62,7 @@ function ArticleComments({ articleId, comments = [], showComments }) {
                     flexShrink: 0,
                   }}
                 >
-                  {comment.author_username?.charAt(0)?.toUpperCase() || "U"}
+                  {comment.username?.charAt(0)?.toUpperCase() || "U"}
                 </Avatar>
 
                 <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -129,7 +83,7 @@ function ArticleComments({ articleId, comments = [], showComments }) {
                         fontWeight: 700,
                       }}
                     >
-                      {comment.author_username || "Unknown user"}
+                      {comment.username || "Unknown user"}
                     </Typography>
 
                     <Typography
@@ -160,72 +114,6 @@ function ArticleComments({ articleId, comments = [], showComments }) {
         )}
 
         <Divider sx={{ mb: 2 }} />
-
-        <Box component="form" onSubmit={handleAddComment}>
-          <Stack direction="row" spacing={1} alignItems="flex-start">
-            <Avatar
-              sx={{
-                width: 34,
-                height: 34,
-                fontSize: 14,
-                bgcolor: "primary.main",
-                flexShrink: 0,
-              }}
-            >
-              U
-            </Avatar>
-
-            <TextField
-              value={newComment}
-              onChange={(event) => setNewComment(event.target.value)}
-              placeholder="Write a comment..."
-              size="small"
-              fullWidth
-              multiline
-              maxRows={4}
-              disabled={isSending}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 4,
-                  backgroundColor: "background.paper",
-                },
-              }}
-            />
-
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!newComment.trim() || isSending}
-              sx={{
-                minWidth: 42,
-                width: 42,
-                height: 40,
-                borderRadius: "50%",
-                p: 0,
-              }}
-            >
-              {isSending ? (
-                <CircularProgress size={19} color="inherit" />
-              ) : (
-                <SendRoundedIcon fontSize="small" />
-              )}
-            </Button>
-          </Stack>
-
-          {error && (
-            <Typography
-              variant="caption"
-              color="error"
-              sx={{
-                display: "block",
-                mt: 1,
-                ml: 5.5,
-              }}
-            >
-              {error}
-            </Typography>
-          )}
-        </Box>
       </Box>
     </Collapse>
   );

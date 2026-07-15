@@ -318,99 +318,11 @@ function ArticleCard({ article, onOpen }) {
           </IconButton>
         </Tooltip>
       </CardActions>
-      <Collapse in={showComments} unmountOnExit>
-        <Divider />
-
-        <Box
-          sx={{
-            px: 2,
-            py: 1.5,
-            backgroundColor: "action.hover",
-            textAlign: "left",
-          }}
-        >
-          <Stack spacing={1.5} alignItems="stretch">
-            {comments.map((comment) => (
-              <Stack
-                key={comment.id}
-                direction="row"
-                spacing={1}
-                alignItems="flex-start"
-                sx={{
-                  width: "100%",
-                  textAlign: "left",
-                }}
-              >
-                <Avatar
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    fontSize: 13,
-                    bgcolor: "primary.main",
-                    flexShrink: 0,
-                  }}
-                >
-                  {comment.username?.charAt(0)?.toUpperCase() || "U"}
-                </Avatar>
-
-                <Box
-                  sx={{
-                    flex: 1,
-                    minWidth: 0,
-                    textAlign: "left",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: "fit-content",
-                      maxWidth: "100%",
-                      px: 1.5,
-                      py: 1,
-                      borderRadius: 3,
-                      backgroundColor: "background.paper",
-                      textAlign: "left",
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        display: "block",
-                        fontWeight: 700,
-                        textAlign: "left",
-                      }}
-                    >
-                      {comment.username || "Unknown user"}
-                    </Typography>
-
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        textAlign: "left",
-                        overflowWrap: "anywhere",
-                      }}
-                    >
-                      {comment.content}
-                    </Typography>
-                  </Box>
-                  {comment.created_at && (
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        display: "block",
-                        mt: 0.4,
-                        ml: 1,
-                        color: "text.secondary",
-                      }}
-                    >
-                      {formatDate(comment.created_at)}
-                    </Typography>
-                  )}
-                </Box>
-              </Stack>
-            ))}
-          </Stack>
-        </Box>
-      </Collapse>
+      <ArticleComments
+        articleName={title}
+        comments={comments}
+        showComments={showComments}
+      />
     </Card>
   );
 }

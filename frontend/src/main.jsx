@@ -8,6 +8,7 @@ UserProvider;
 import { BrowserRouter } from "react-router-dom";
 import UserProvider from "./providers/UserProvider.jsx";
 import ArticleProvider from "./providers/ArticleProvider.jsx";
+import CommentProvider from "./providers/CommentProvider.jsx";
 
 BrowserRouter;
 createRoot(document.getElementById("root")).render(
@@ -16,7 +17,9 @@ createRoot(document.getElementById("root")).render(
       <ThemeProvider theme={theme}>
         <UserProvider>
           <ArticleProvider>
-            <App />
+            <CommentProvider>
+              <App />
+            </CommentProvider>
           </ArticleProvider>
         </UserProvider>
       </ThemeProvider>

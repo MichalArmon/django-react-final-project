@@ -1,53 +1,80 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import commentForServer from "../normalization/commentForServer";
 
 const CommentContext = createContext();
 
 export default function CommentProvider({ children }) {
   const [comments, setComments] = useState([]);
+  const [currentComments, setCurrentComments] = useState(comments);
+  const [newComment, setNewComment] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState("");
 
-  // ✔️✔️✔️GET ALL ✔️✔️✔️
-  async function handleGetAllComments(page = 1) {
+  useEffect(() => {
+    setCurrentComments(comments);
+  }, [comments]);
+
+  // ✔️✔️✔️CREATE ✔️✔️✔️
+
+  async function handleAddComment(e, commentData) {
+    e.preventDefault();
+    const commentForServer = commentForServer(commentData);
+
+    const content = newComment.trim();
+
+    if (!content || isSending) return;
+
     try {
-      const response = await axios.get(
+      setIsSending(true);
+      setError("");
+
+      const token = localStorage.getItem("token");
+
+      const response = await axios.post(
         "http://localhost:8000/api/comments/",
-        {},
+        commentData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
 
-      console.log(response.data.results);
-      setArticles(response.data.results);
-      setTotalArticles(response.data.count);
-      return response.data.results;
+      setCurrentComments((prev) => [...prev, response.data]);
+      setNewComment("");
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Status:", error.response?.status);
-        console.error("Data:", error.response?.data);
-      }
+      console.error(error);
 
-      throw error;
+      setError(
+        error.response?.data?.detail || "The comment could not be added.",
+      );
+    } finally {
+      setIsSending(false);
     }
   }
 
   return (
-    <ArticleContext.Provider
+    <CommentContext.Provider
       value={{
-        setArticles,
-        articles,
-        handleGetAllArticles,
-        totalArticles,
-        setTotalArticles,
-        handleGetFilteredArticles,
-        filteredArticles,
-        setFilteredArticles,
+        comments,
+        setComments,
+        currentComments,
+        setCurrentComments,
+        isSending,
+        setIsSending,
+        error,
+        setError,
+        handleAddComment,
       }}
     >
       {children}
-    </ArticleContext.Provider>
+    </CommentContext.Provider>
   );
 }
 
-export const useArticle = () => {
-  const context = useContext(ArticleContext);
-  if (!context) throw Error("useArticles must be used within a NameProvider");
+export const useComment = () => {
+  const context = useContext(CommentContext);
+  if (!context) throw Error("useComments must be used within a NameProvider");
   return context;
 };
