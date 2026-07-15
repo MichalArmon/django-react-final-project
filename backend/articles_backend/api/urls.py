@@ -8,6 +8,7 @@ from .views import CustomTokenObtainPairView
 
 urlpatterns = [
     path("articles/", views.ArticlesListCreate.as_view(), name="articles"),
+    path("comments/", views.CommentListCreate.as_view(), name="comments"),
     path("users/", views.users, name="users"),
     path(
         "users/login/",

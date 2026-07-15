@@ -20,9 +20,10 @@ from .serializers import (
     ArticleSerializer,
     ProductSerializer,
     CustomTokenObtainPairSerializer,
+    CommentSerializer,
 )
 from django.contrib.auth.models import User
-from .models import Article, Product
+from .models import Article, Product, Comment
 
 # הנתיב לתיקייה שבה נמצאים קובצי המודל
 MODELS_DIR = Path(__file__).resolve().parent / "ml_models"
@@ -36,13 +37,6 @@ feature_columns = joblib.load(MODELS_DIR / "article_views_features.pkl")
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-
-
-@api_view(["GET"])
-def articles(request):
-    articles = Article.objects.all()
-    serializer = ArticleSerializer(articles, many=True)
-    return Response(serializer.data)
 
 
 @api_view(["POST"])
@@ -170,3 +164,13 @@ class ArticlesListCreate(ListCreateAPIView):
 class ArticleDetails(RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+
+
+class CommentListCreate(ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+class CommentDetails(RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
