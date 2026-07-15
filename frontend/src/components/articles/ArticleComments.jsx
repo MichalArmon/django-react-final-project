@@ -15,6 +15,7 @@ import {
 
 import { SendToMobileRounded } from "@mui/icons-material";
 import { useComment } from "../../providers/CommentProvider";
+import CreateComment from "../comments/CreateComment";
 
 function formatDate(dateString) {
   if (!dateString) return "";
@@ -114,6 +115,7 @@ function ArticleComments({ articleName, comments = [], showComments }) {
         )}
 
         <Divider sx={{ mb: 2 }} />
+        <CreateComment />
       </Box>
     </Collapse>
   );

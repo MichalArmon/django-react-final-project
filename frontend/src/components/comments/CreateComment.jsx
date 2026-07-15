@@ -16,10 +16,18 @@ import {
 import { SendToMobileRounded } from "@mui/icons-material";
 import { useComment } from "../../providers/CommentProvider";
 import useForm from "../../hooks/useForm";
+import initialDataComment from "../../initialData/initialDataComment";
+import { commentSchema } from "../../models/Comment";
 
 function CreateComment() {
+  const { handleAddComment, isSending } = useComment();
+  const { handleChange, handleSubmit, errors, formDetails } = useForm(
+    initialDataComment,
+    commentSchema,
+    handleAddComment,
+  );
   return (
-    <Box component="form" onSubmit={handleAddComment()}>
+    <Box component="form" onSubmit={handleSubmit}>
       <Stack direction="row" spacing={1} alignItems="flex-start">
         <Avatar
           sx={{
@@ -34,13 +42,11 @@ function CreateComment() {
         </Avatar>
 
         <TextField
-          value={newComment}
-          onChange={(event) => setNewComment(event.target.value)}
-          placeholder="Write a comment..."
-          size="small"
-          fullWidth
-          multiline
-          maxRows={4}
+          name="content"
+          onChange={handleChange}
+          value={formDetails.content}
+          error={Boolean(errors.content)}
+          helperText={errors.content}
           disabled={isSending}
           sx={{
             "& .MuiOutlinedInput-root": {
@@ -53,7 +59,7 @@ function CreateComment() {
         <Button
           type="submit"
           variant="contained"
-          disabled={!newComment.trim() || isSending}
+          disabled={!formDetails.content.trim() || isSending}
           sx={{
             minWidth: 42,
             width: 42,
@@ -69,20 +75,6 @@ function CreateComment() {
           )}
         </Button>
       </Stack>
-
-      {error && (
-        <Typography
-          variant="caption"
-          color="error"
-          sx={{
-            display: "block",
-            mt: 1,
-            ml: 5.5,
-          }}
-        >
-          {error}
-        </Typography>
-      )}
     </Box>
   );
 }
