@@ -17,9 +17,8 @@ export default function CommentProvider({ children }) {
 
   // ✔️✔️✔️CREATE ✔️✔️✔️
 
-  async function handleAddComment(e, commentData) {
-    e.preventDefault();
-    const commentForServer = commentForServer(commentData);
+  async function handleAddComment(commentData) {
+    const commentToServer = commentForServer(commentData);
 
     const content = newComment.trim();
 
@@ -33,7 +32,7 @@ export default function CommentProvider({ children }) {
 
       const response = await axios.post(
         "http://localhost:8000/api/comments/",
-        commentData,
+        commentToServer,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -5,11 +5,12 @@ export default function useForm(initialValues, schema, onSubmit) {
   const [errors, setErrors] = useState({});
   const [formDetails, setFormDetails] = useState(initialValues);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     console.log(formDetails);
     const { error } = schema.validate(formDetails, { abortEarly: false });
     console.log(error);
-    onSubmit(e, formDetails);
+    onSubmit(formDetails);
   };
   const handleChange = (e) => {
     const { value, name } = e.target;
