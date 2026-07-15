@@ -9,7 +9,7 @@ export default function useForm(initialValues, schema, onSubmit) {
     console.log(formDetails);
     const { error } = schema.validate(formDetails, { abortEarly: false });
     console.log(error);
-    onSubmit(formDetails);
+    onSubmit(e, formDetails);
   };
   const handleChange = (e) => {
     const { value, name } = e.target;

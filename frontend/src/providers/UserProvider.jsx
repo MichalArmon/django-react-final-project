@@ -18,7 +18,7 @@ export default function UserProvider({ children }) {
 
   // ✔️✔️✔️register User ✔️✔️✔️
 
-  const handleSubmitCreateUser = async (data) => {
+  const handleSubmitCreateUser = async (e, data) => {
     const userDetailsForServer = userToServer(data);
 
     try {
@@ -41,7 +41,7 @@ export default function UserProvider({ children }) {
   };
 
   // ✔️✔️✔️LOGIN ✔️✔️✔️
-  const handleSubmitLoginUser = async (data) => {
+  const handleSubmitLoginUser = async (e, data) => {
     const loginUserDetailsForServer = loginUserToServer(data);
     console.log("loginUserDetailsForServer:", loginUserDetailsForServer);
     try {
