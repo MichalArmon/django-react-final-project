@@ -169,6 +169,10 @@ class ArticleDetails(RetrieveUpdateDestroyAPIView):
 class CommentListCreate(ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class CommentDetails(RetrieveUpdateDestroyAPIView):

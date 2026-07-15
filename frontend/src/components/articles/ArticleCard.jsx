@@ -76,6 +76,7 @@ function ArticleCard({ article, onOpen }) {
   }
 
   const {
+    id,
     title,
     content,
     author_username,
@@ -323,6 +324,7 @@ function ArticleCard({ article, onOpen }) {
         articleName={title}
         comments={comments}
         showComments={showComments}
+        id={id}
       />
     </Card>
   );

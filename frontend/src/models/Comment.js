@@ -28,7 +28,7 @@ function normalizeComment(value) {
 }
 
 export const commentSchema = Joi.object({
-  article: Joi.string().max(200),
+  article: Joi.number(),
   content: Joi.string()
     .trim()
     .min(2)

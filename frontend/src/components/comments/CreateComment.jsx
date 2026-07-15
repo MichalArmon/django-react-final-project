@@ -19,13 +19,15 @@ import useForm from "../../hooks/useForm";
 import initialDataComment from "../../initialData/initialDataComment";
 import { commentSchema } from "../../models/Comment";
 
-function CreateComment() {
+function CreateComment({ articleId }) {
+  const initialDataCommentNew = { ...initialDataComment, article: articleId };
   const { handleAddComment, isSending } = useComment();
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
-    initialDataComment,
+    initialDataCommentNew,
     commentSchema,
     handleAddComment,
   );
+
   return (
     <Box component="form" onSubmit={handleSubmit}>
       <Stack direction="row" spacing={1} alignItems="flex-start">

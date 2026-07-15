@@ -27,7 +27,7 @@ function formatDate(dateString) {
   }).format(new Date(dateString));
 }
 
-function ArticleComments({ articleName, comments = [], showComments }) {
+function ArticleComments({ id, comments = [], showComments }) {
   const { currentComments, handleAddComment, isSending } = useComment;
   return (
     <Collapse in={showComments} unmountOnExit>
@@ -115,7 +115,7 @@ function ArticleComments({ articleName, comments = [], showComments }) {
         )}
 
         <Divider sx={{ mb: 2 }} />
-        <CreateComment />
+        <CreateComment articleId={id} />
       </Box>
     </Collapse>
   );

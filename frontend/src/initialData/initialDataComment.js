@@ -1,5 +1,5 @@
 const initialDataComment = {
-  article: "",
+  article: 0,
   content: "",
 };
 
