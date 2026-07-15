@@ -10,6 +10,7 @@ import {
   Stack,
   Tooltip,
   Typography,
+  Collapse,
 } from "@mui/material";
 
 import {
@@ -20,6 +21,8 @@ import {
   FavoriteBorderRounded,
   VisibilityOutlined,
 } from "@mui/icons-material";
+import ArticleComments from "./ArticleComments";
+import { useState } from "react";
 
 function formatDate(dateString) {
   if (!dateString) {
@@ -65,6 +68,12 @@ function formatNumber(value = 0) {
 }
 
 function ArticleCard({ article, onOpen }) {
+  const [showComments, setShowComments] = useState(false);
+
+  function handleToggleComments() {
+    setShowComments((prev) => !prev);
+  }
+
   const {
     title,
     content,
@@ -216,51 +225,87 @@ function ArticleCard({ article, onOpen }) {
       <Divider />
       <CardActions
         sx={{
-          px: 3,
-          py: 1.8,
-          justifyContent: "space-between",
+          px: 2,
+          py: 1.4,
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
         }}
       >
         <Stack
           direction="row"
-          spacing={2}
+          spacing={1.3}
           alignItems="center"
-          sx={{ color: "text.secondary" }}
+          sx={{
+            color: "text.secondary",
+            flex: 1,
+            minWidth: 0,
+          }}
         >
           <Tooltip title="Views">
-            <Stack direction="row" spacing={0.6} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={0.5}
+              alignItems="center"
+              sx={{ flexShrink: 0 }}
+            >
               <VisibilityOutlined sx={{ fontSize: 18 }} />
+
               <Typography variant="caption">{formatNumber(views)}</Typography>
             </Stack>
           </Tooltip>
 
           <Tooltip title="Likes">
-            <Stack direction="row" spacing={0.6} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={0.5}
+              alignItems="center"
+              sx={{ flexShrink: 0 }}
+            >
               <FavoriteBorderRounded sx={{ fontSize: 18 }} />
+
               <Typography variant="caption">{formatNumber(likes)}</Typography>
             </Stack>
           </Tooltip>
+          <Tooltip title={showComments ? "Hide comments" : "Show comments"}>
+            <IconButton
+              onClick={handleToggleComments}
+              size="small"
+              aria-label="show comments"
+            >
+              <Stack direction="row" spacing={0.6} alignItems="center">
+                <CheckBoxOutlineBlankRounded sx={{ fontSize: 17 }} />
 
-          <Tooltip title="Comments">
-            <Stack direction="row" spacing={0.6} alignItems="center">
-              <CheckBoxOutlineBlankRounded sx={{ fontSize: 17 }} />
-              <Typography variant="caption">{comments.length}</Typography>
-            </Stack>
+                <Typography variant="caption">{comments.length}</Typography>
+              </Stack>
+            </IconButton>
           </Tooltip>
 
           <Tooltip title="Reading time">
-            <Stack direction="row" spacing={0.6} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={0.5}
+              alignItems="center"
+              sx={{
+                ml: "auto",
+                flexShrink: 0,
+              }}
+            >
               <AccessTimeRounded sx={{ fontSize: 18 }} />
-              <Typography variant="caption">
+
+              <Typography variant="caption" sx={{ whiteSpace: "nowrap" }}>
                 {calculateReadingTime(word_count)} min
               </Typography>
             </Stack>
           </Tooltip>
         </Stack>
+
         <Tooltip title="Read article">
           <IconButton
             onClick={() => onOpen?.(article)}
+            size="small"
             sx={{
+              flexShrink: 0,
               color: "primary.main",
               border: "1px solid",
               borderColor: "divider",
@@ -273,6 +318,99 @@ function ArticleCard({ article, onOpen }) {
           </IconButton>
         </Tooltip>
       </CardActions>
+      <Collapse in={showComments} unmountOnExit>
+        <Divider />
+
+        <Box
+          sx={{
+            px: 2,
+            py: 1.5,
+            backgroundColor: "action.hover",
+            textAlign: "left",
+          }}
+        >
+          <Stack spacing={1.5} alignItems="stretch">
+            {comments.map((comment) => (
+              <Stack
+                key={comment.id}
+                direction="row"
+                spacing={1}
+                alignItems="flex-start"
+                sx={{
+                  width: "100%",
+                  textAlign: "left",
+                }}
+              >
+                <Avatar
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    fontSize: 13,
+                    bgcolor: "primary.main",
+                    flexShrink: 0,
+                  }}
+                >
+                  {comment.username?.charAt(0)?.toUpperCase() || "U"}
+                </Avatar>
+
+                <Box
+                  sx={{
+                    flex: 1,
+                    minWidth: 0,
+                    textAlign: "left",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: "fit-content",
+                      maxWidth: "100%",
+                      px: 1.5,
+                      py: 1,
+                      borderRadius: 3,
+                      backgroundColor: "background.paper",
+                      textAlign: "left",
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: "block",
+                        fontWeight: 700,
+                        textAlign: "left",
+                      }}
+                    >
+                      {comment.username || "Unknown user"}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        textAlign: "left",
+                        overflowWrap: "anywhere",
+                      }}
+                    >
+                      {comment.content}
+                    </Typography>
+                  </Box>
+                  {comment.created_at && (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: "block",
+                        mt: 0.4,
+                        ml: 1,
+                        color: "text.secondary",
+                      }}
+                    >
+                      {formatDate(comment.created_at)}
+                    </Typography>
+                  )}
+                </Box>
+              </Stack>
+            ))}
+          </Stack>
+        </Box>
+      </Collapse>
     </Card>
   );
 }
