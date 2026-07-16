@@ -23,7 +23,8 @@ import {
 } from "@mui/icons-material";
 import ArticleComments from "./ArticleComments";
 import { useState } from "react";
-import CreateComment from "../comments/CreateComment";
+
+import { useComment } from "../../providers/CommentProvider";
 
 function formatDate(dateString) {
   if (!dateString) {
@@ -69,11 +70,12 @@ function formatNumber(value = 0) {
 }
 
 function ArticleCard({ article, onOpen }) {
-  const [showComments, setShowComments] = useState(false);
+  const {
+    currentComments,
 
-  function handleToggleComments() {
-    setShowComments((prev) => !prev);
-  }
+    handleGetByArticle,
+  } = useComment();
+  const [showComments, setShowComments] = useState(false);
 
   const {
     id,
@@ -89,6 +91,10 @@ function ArticleCard({ article, onOpen }) {
     is_breaking_news = false,
   } = article;
   const titleFixed = title.split("#")[0];
+  const handleToggleComments = async () => {
+    await handleGetByArticle(id);
+    setShowComments((prev) => !prev);
+  };
   const visibleTags = tags.slice(0, 3);
   const extraTags = Math.max(0, tags.length - visibleTags.length);
   return (
@@ -322,7 +328,7 @@ function ArticleCard({ article, onOpen }) {
       </CardActions>
       <ArticleComments
         articleName={title}
-        comments={comments}
+        comments={currentComments}
         showComments={showComments}
         id={id}
       />

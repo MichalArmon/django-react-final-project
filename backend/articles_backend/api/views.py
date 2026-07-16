@@ -177,7 +177,7 @@ class CommentListCreate(ListCreateAPIView):
         OrderingFilter,
     ]
 
-    search_fields = [
+    filterset_fields = [
         "article",
     ]
 

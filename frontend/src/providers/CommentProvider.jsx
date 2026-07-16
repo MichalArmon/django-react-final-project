@@ -61,7 +61,7 @@ export default function CommentProvider({ children }) {
       const token = localStorage.getItem("access token");
 
       const response = await axios.get(
-        `http://localhost:8000/api/comments/search=${articleId}`,
+        `http://localhost:8000/api/comments/?article=${articleId}`,
 
         {
           headers: {
@@ -70,7 +70,7 @@ export default function CommentProvider({ children }) {
         },
       );
 
-      setComments((prev) => [...prev, response.data]);
+      setCurrentComments((prev) => [...prev, response.data]);
 
       return response.data;
     } catch (error) {
