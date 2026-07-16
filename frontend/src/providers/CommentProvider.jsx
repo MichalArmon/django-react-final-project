@@ -9,14 +9,10 @@ const CommentContext = createContext();
 export default function CommentProvider({ children }) {
   const [comments, setComments] = useState([]);
 
-  const [currentComments, setCurrentComments] = useState("");
+  const [currentComments, setCurrentComments] = useState([]);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const { refreshAccessToken } = useUser();
-
-  useEffect(() => {
-    setComments(comments);
-  }, [comments]);
 
   // ✔️✔️✔️CREATE ✔️✔️✔️
 
@@ -62,8 +58,6 @@ export default function CommentProvider({ children }) {
   async function handleGetByArticle(articleId) {
     let token = getToken();
     try {
-      const token = localStorage.getItem("access token");
-
       const response = await axios.get(
         `http://localhost:8000/api/comments/?article=${articleId}`,
 
@@ -74,7 +68,7 @@ export default function CommentProvider({ children }) {
         },
       );
 
-      setCurrentComments((prev) => [...prev, response.data]);
+      setCurrentComments(response.data.results);
 
       return response.data;
     } catch (error) {
