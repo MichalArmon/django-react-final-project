@@ -1,15 +1,20 @@
 import { jwtDecode } from "jwt-decode";
 
-const TOKEN = "my token";
-export const setTokenInLocalStorage = (jwtToken) => {
-  localStorage.setItem(TOKEN, jwtToken);
+const ACCESS_TOKEN = "access token";
+const REFRESH_TOKEN = "refresh token";
+export const setAccessTokenInLocalStorage = (jwtToken) => {
+  localStorage.setItem(ACCESS_TOKEN, jwtToken);
+};
+
+export const setRefreshTokenInLocalStorage = (jwtToken) => {
+  localStorage.setItem(REFRESH_TOKEN, jwtToken);
 };
 
 export const getToken = () => {
-  return localStorage.getItem(TOKEN);
+  return localStorage.getItem(ACCESS_TOKEN);
 };
 export const removeToken = () => {
-  localStorage.removeItem(TOKEN);
+  localStorage.removeItem(ACCESS_TOKEN);
 };
 export const getUser = () => {
   try {

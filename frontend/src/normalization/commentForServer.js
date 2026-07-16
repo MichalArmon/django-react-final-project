@@ -1,6 +1,6 @@
 const commentForServer = (comment) => {
   return {
-    article: comment.articleId,
+    article: comment.article,
     content: comment.content,
   };
 };

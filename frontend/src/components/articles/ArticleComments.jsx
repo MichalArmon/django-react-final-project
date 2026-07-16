@@ -28,7 +28,7 @@ function formatDate(dateString) {
 }
 
 function ArticleComments({ id, comments = [], showComments }) {
-  const { currentComments, handleAddComment, isSending } = useComment;
+  const { handleAddComment, isSending } = useComment();
   return (
     <Collapse in={showComments} unmountOnExit>
       <Divider />

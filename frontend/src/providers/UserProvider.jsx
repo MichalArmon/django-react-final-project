@@ -5,14 +5,14 @@ import loginUserToServer from "../normalization/loginForServer";
 
 import {
   getUser,
-  setTokenInLocalStorage,
+  setAccessTokenInLocalStorage,
 } from "../services/localStorageService";
 import { useNavigate } from "react-router-dom";
 
 const UserContext = createContext();
 
 export default function UserProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => getUser());
   const URL = "http://localhost:8000/api";
   const navigate = useNavigate("");
 
@@ -50,7 +50,7 @@ export default function UserProvider({ children }) {
         loginUserDetailsForServer,
       );
       const token = response.data.access;
-      setTokenInLocalStorage(token);
+      setAccessTokenInLocalStorage(token);
       const user = getUser(response.data);
       console.log(user);
       // setOpenLogin(false);
