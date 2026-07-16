@@ -97,6 +97,7 @@ export default function CommentProvider({ children }) {
         handleAddComment,
         currentComments,
         setCurrentComments,
+        handleGetByArticle,
       }}
     >
       {children}

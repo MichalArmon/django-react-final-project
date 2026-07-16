@@ -171,6 +171,16 @@ class CommentListCreate(ListCreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
+    filter_backends = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    ]
+
+    search_fields = [
+        "article",
+    ]
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
