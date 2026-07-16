@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import commentForServer from "../normalization/commentForServer";
+import { useUser } from "./UserProvider";
+import { getToken } from "../services/localStorageService";
 
 const CommentContext = createContext();
 
@@ -10,6 +12,7 @@ export default function CommentProvider({ children }) {
   const [currentComments, setCurrentComments] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
+  const { refreshAccessToken } = useUser();
 
   useEffect(() => {
     setComments(comments);
@@ -57,6 +60,7 @@ export default function CommentProvider({ children }) {
   // ✔️✔️✔️GET by Article ✔️✔️✔️
 
   async function handleGetByArticle(articleId) {
+    let token = getToken();
     try {
       const token = localStorage.getItem("access token");
 
@@ -74,6 +78,15 @@ export default function CommentProvider({ children }) {
 
       return response.data;
     } catch (error) {
+      if (error.response?.status !== 401) {
+        throw error;
+      }
+
+      token = await refreshAccessToken();
+
+      if (!token) {
+        throw error;
+      }
       console.error(error.response?.data || error);
 
       setError(

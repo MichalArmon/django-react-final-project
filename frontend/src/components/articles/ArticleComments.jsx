@@ -84,7 +84,7 @@ function ArticleComments({ id, comments = [], showComments }) {
                         fontWeight: 700,
                       }}
                     >
-                      {comment.username || "Unknown user"}
+                      {comment.article || "Unknown user"}
                     </Typography>
 
                     <Typography

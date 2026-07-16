@@ -5,7 +5,10 @@ import loginUserToServer from "../normalization/loginForServer";
 
 import {
   getUser,
+  getRefreshToken,
   setAccessTokenInLocalStorage,
+  setRefreshTokenInLocalStorage,
+  removeTokens,
 } from "../services/localStorageService";
 import { useNavigate } from "react-router-dom";
 
@@ -49,8 +52,10 @@ export default function UserProvider({ children }) {
         `${URL}/users/login/`,
         loginUserDetailsForServer,
       );
-      const token = response.data.access;
-      setAccessTokenInLocalStorage(token);
+      const accessToken = response.data.access;
+      const refreshToken = response.data.refresh;
+      setAccessTokenInLocalStorage(accessToken);
+      setRefreshTokenInLocalStorage(refreshToken);
       const user = getUser(response.data);
       console.log(user);
       // setOpenLogin(false);
@@ -66,6 +71,37 @@ export default function UserProvider({ children }) {
     }
   };
 
+  // ✔️✔️✔️Refresh Token ✔️✔️✔️
+
+  const refreshAccessToken = async () => {
+    const refreshToken = getRefreshToken();
+
+    if (!refreshToken) {
+      return null;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/users/token/refresh/",
+        {
+          refresh: refreshToken,
+        },
+      );
+
+      const newAccessToken = response.data.access;
+
+      setAccessTokenInLocalStorage(newAccessToken);
+
+      return newAccessToken;
+    } catch (error) {
+      console.error("Refresh token failed:", error.response?.data || error);
+
+      removeTokens();
+
+      return null;
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -73,6 +109,7 @@ export default function UserProvider({ children }) {
         handleSubmitLoginUser,
         user,
         setUser,
+        refreshAccessToken,
       }}
     >
       {children}
