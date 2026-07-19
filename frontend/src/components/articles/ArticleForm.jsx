@@ -2,17 +2,19 @@ import { Button, Grid, TextField, Typography } from "@mui/material";
 import Form from "../form/Form";
 import { useState } from "react";
 import useForm from "../../hooks/useForm";
-import User from "../../models/User";
+
 import initialUserData from "../../initialData/initialUserData";
 import { useUser } from "../../providers/UserProvider";
 import { Link } from "react-router-dom";
 import SignAndLogButton from "./SignAndLogButton";
+import { articleSchema } from "../../models/Article";
+import initialDataArticle from "../../initialData/initialDataArticle";
 
 function ArticleForm() {
   const { handleSubmitCreateUser } = useUser();
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
-    initialUserData,
-    User,
+    initialDataArticle,
+    articleSchema,
     handleSubmitCreateUser,
   );
   return (

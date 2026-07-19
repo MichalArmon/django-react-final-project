@@ -56,6 +56,21 @@ export default function ArticleProvider({ children }) {
       throw error;
     }
   }
+  // ✔️✔️✔️Create Article ✔️✔️✔️
+  const handleSubmitCreateArticle = async (data) => {
+    try {
+      const response = await axios.post(`${URL}/articles/`, data);
+      console.log(response);
+
+      // setSnack("success", "Account created successfully!");
+      // await handleSubmitLoginUser(userDetailsForServer);
+    } catch (error) {
+      // setSnack("error", error.response.data);
+      if (error.response) {
+        console.log(error.response.data);
+      }
+    }
+  };
 
   return (
     <ArticleContext.Provider
@@ -68,6 +83,7 @@ export default function ArticleProvider({ children }) {
         handleGetFilteredArticles,
         filteredArticles,
         setFilteredArticles,
+        handleSubmitCreateArticle,
       }}
     >
       {children}
