@@ -1,14 +1,17 @@
 import { createContext, useContext, useState } from "react";
 import axios from "axios";
 import { getToken } from "../services/localStorageService";
+import { useUser } from "./UserProvider";
 
 const ArticleContext = createContext();
 
 export default function ArticleProvider({ children }) {
+  const { refreshAccessToken } = useUser();
   const [articles, setArticles] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [totalArticles, setTotalArticles] = useState(0);
   const token = getToken();
+  const URL = "http://localhost:8000/api/articles/";
 
   // ✔️✔️✔️GET ALL ✔️✔️✔️
   async function handleGetAllArticles(page = 1) {
@@ -16,9 +19,6 @@ export default function ArticleProvider({ children }) {
       const response = await axios.get("http://localhost:8000/api/articles/", {
         params: {
           page: page,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -64,15 +64,32 @@ export default function ArticleProvider({ children }) {
   // ✔️✔️✔️Create Article ✔️✔️✔️
   const handleSubmitCreateArticle = async (data) => {
     try {
-      const response = await axios.post(`${URL}/articles/`, data);
-      console.log(response);
+      const token = getToken();
 
-      // setSnack("success", "Account created successfully!");
-      // await handleSubmitLoginUser(userDetailsForServer);
+      const response = await axios.post(URL, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log(response.data);
     } catch (error) {
-      // setSnack("error", error.response.data);
-      if (error.response) {
-        console.log(error.response.data);
+      if (error.response?.status === 401) {
+        try {
+          const newToken = await refreshAccessToken();
+
+          const response = await axios.post(URL, data, {
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+
+          console.log(response.data);
+        } catch (refreshError) {
+          console.log("Refresh failed:", refreshError.response?.data);
+        }
+      } else {
+        console.log(error.response?.data);
       }
     }
   };

@@ -29,7 +29,7 @@ class Article(models.Model):
 
     tags = models.ManyToManyField(Tag, related_name="articles", blank=True)
 
-    published_at = models.DateField()
+    published_at = models.DateField(auto_now_add=True)
 
     # Extra fields for ML / prediction
     views = models.IntegerField(default=0)

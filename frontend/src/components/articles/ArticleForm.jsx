@@ -3,23 +3,24 @@ import Form from "../form/Form";
 import { useState } from "react";
 import useForm from "../../hooks/useForm";
 
-import initialUserData from "../../initialData/initialUserData";
 import { useUser } from "../../providers/UserProvider";
 import { Link } from "react-router-dom";
 
 import { articleSchema } from "../../models/Article";
+
 import initialDataArticle from "../../initialData/initialDataArticle";
+import { useArticle } from "../../providers/ArticleProvider";
 
 function ArticleForm() {
-  const { handleSubmitCreateUser } = useUser();
+  const { handleSubmitCreateArticle } = useArticle();
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
     initialDataArticle,
     articleSchema,
-    handleSubmitCreateUser,
+    handleSubmitCreateArticle,
   );
   return (
     <>
-      <Form onSubmit={handleSubmit} title="Write Article">
+      <Form onSubmit={handleSubmit} title="Publish Your Story">
         <Grid item xs={12} md={12}>
           <TextField
             label="Title"
@@ -40,6 +41,8 @@ function ArticleForm() {
             onChange={handleChange}
             error={Boolean(errors.content)}
             helperText={errors.content}
+            multiline
+            rows={6}
           />
         </Grid>
       </Form>
