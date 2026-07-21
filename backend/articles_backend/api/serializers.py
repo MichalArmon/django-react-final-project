@@ -96,6 +96,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             "is_breaking_news",
             "comments",
         )
+        read_only_fields = ("author",)
 
 
 class ProductSerializer(serializers.ModelSerializer):

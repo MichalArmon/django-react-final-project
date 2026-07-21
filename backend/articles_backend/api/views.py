@@ -132,6 +132,7 @@ class ProductDetails(RetrieveUpdateDestroyAPIView):
 class ArticlesListCreate(ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+    permission_classes = [IsAuthenticated]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -159,6 +160,9 @@ class ArticlesListCreate(ListCreateAPIView):
     ]
 
     ordering = ["likes"]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class ArticleDetails(RetrieveUpdateDestroyAPIView):
