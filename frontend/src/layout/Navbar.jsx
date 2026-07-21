@@ -51,7 +51,10 @@ function Navbar() {
         {user ? (
           <Box sx={{ justifyContent: "space-around", display: "flex" }}>
             <Tabs sx={{ p: 0, m: 0 }}>
-              <Tab label="My articles" />
+              <Tab
+                label="My articles"
+                onClick={() => navigate("/my_articles")}
+              />
             </Tabs>
             <Tooltip title={user.name} arrow>
               <Avatar

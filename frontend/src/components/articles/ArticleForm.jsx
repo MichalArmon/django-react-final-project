@@ -6,7 +6,7 @@ import useForm from "../../hooks/useForm";
 import initialUserData from "../../initialData/initialUserData";
 import { useUser } from "../../providers/UserProvider";
 import { Link } from "react-router-dom";
-import SignAndLogButton from "./SignAndLogButton";
+
 import { articleSchema } from "../../models/Article";
 import initialDataArticle from "../../initialData/initialDataArticle";
 
@@ -19,7 +19,7 @@ function ArticleForm() {
   );
   return (
     <>
-      <Form onSubmit={handleSubmit} title="Register">
+      <Form onSubmit={handleSubmit} title="Write Article">
         <Grid item xs={12} md={12}>
           <TextField
             label="Title"
@@ -55,7 +55,6 @@ function ArticleForm() {
           />
         </Grid>
       </Form>
-      <SignAndLogButton />
     </>
   );
 }
