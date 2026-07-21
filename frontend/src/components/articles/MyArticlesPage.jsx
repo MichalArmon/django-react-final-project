@@ -21,6 +21,7 @@ export default function MyArticlesPage() {
     setTotalArticles,
     handleGetFilteredArticles,
     handleGetMyArticles,
+    myArticles,
   } = useArticle([]);
   const [page, setPage] = useState(1);
   const user = getUser();
@@ -74,7 +75,7 @@ export default function MyArticlesPage() {
             gap: 3,
           }}
         >
-          {articles.map((article) => (
+          {myArticles.map((article) => (
             <ArticleCard
               key={article.id}
               article={article}

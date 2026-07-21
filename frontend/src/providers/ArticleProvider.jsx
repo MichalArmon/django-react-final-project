@@ -9,6 +9,7 @@ export default function ArticleProvider({ children }) {
   const { refreshAccessToken } = useUser();
   const [articles, setArticles] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
+  const [myArticles, setMyArticles] = useState([]);
   const [totalArticles, setTotalArticles] = useState(0);
   const token = getToken();
   const URL = "http://localhost:8000/api/articles/";
@@ -16,23 +17,45 @@ export default function ArticleProvider({ children }) {
   // ✔️✔️✔️GET ALL ✔️✔️✔️
   async function handleGetAllArticles(page = 1) {
     try {
-      const response = await axios.get("http://localhost:8000/api/articles/", {
+      const response = await axios.get(URL, {
         params: {
           page: page,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       });
 
       console.log(response.data.results);
+
       setArticles(response.data.results);
       setTotalArticles(response.data.count);
+
       return response.data.results;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Status:", error.response?.status);
-        console.error("Data:", error.response?.data);
-      }
+      if (error.response?.status === 401) {
+        try {
+          const newToken = await refreshAccessToken();
 
-      throw error;
+          const response = await axios.get(URL, {
+            params: {
+              page: page,
+            },
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+
+          setArticles(response.data.results);
+          setTotalArticles(response.data.count);
+
+          return response.data.results;
+        } catch (refreshError) {
+          console.log("Refresh or retry failed:", refreshError.response?.data);
+        }
+      } else {
+        console.log(error.response?.data);
+      }
     }
   }
 
@@ -78,7 +101,7 @@ export default function ArticleProvider({ children }) {
       );
 
       console.log(response.data.results);
-      setArticles(response.data.results);
+      setMyArticles(response.data.results);
       setTotalArticles(response.data.count);
       return response.data.results;
     } catch (error) {
@@ -93,8 +116,6 @@ export default function ArticleProvider({ children }) {
   // ✔️✔️✔️Create Article ✔️✔️✔️
   const handleSubmitCreateArticle = async (data) => {
     try {
-      const token = getToken();
-
       const response = await axios.post(URL, data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -136,6 +157,7 @@ export default function ArticleProvider({ children }) {
         setFilteredArticles,
         handleSubmitCreateArticle,
         handleGetMyArticles,
+        myArticles,
       }}
     >
       {children}
