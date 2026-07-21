@@ -61,6 +61,35 @@ export default function ArticleProvider({ children }) {
       throw error;
     }
   }
+
+  // ✔️✔️✔️Get My articles ✔️✔️✔️
+  async function handleGetMyArticles(authorId, page = 1) {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/articles?author=${authorId}`,
+        {
+          params: {
+            page: page,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      console.log(response.data.results);
+      setArticles(response.data.results);
+      setTotalArticles(response.data.count);
+      return response.data.results;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Status:", error.response?.status);
+        console.error("Data:", error.response?.data);
+      }
+
+      throw error;
+    }
+  }
   // ✔️✔️✔️Create Article ✔️✔️✔️
   const handleSubmitCreateArticle = async (data) => {
     try {
@@ -106,6 +135,7 @@ export default function ArticleProvider({ children }) {
         filteredArticles,
         setFilteredArticles,
         handleSubmitCreateArticle,
+        handleGetMyArticles,
       }}
     >
       {children}

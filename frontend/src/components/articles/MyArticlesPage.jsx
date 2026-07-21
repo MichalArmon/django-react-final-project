@@ -10,6 +10,7 @@ import ArticleCard from "./ArticleCard";
 import { useState, useEffect } from "react";
 
 import { useArticle } from "../../providers/ArticleProvider";
+import { getUser } from "../../services/localStorageService";
 
 export default function MyArticlesPage() {
   const {
@@ -19,8 +20,10 @@ export default function MyArticlesPage() {
     totalArticles,
     setTotalArticles,
     handleGetFilteredArticles,
+    handleGetMyArticles,
   } = useArticle([]);
   const [page, setPage] = useState(1);
+  const user = getUser();
 
   const pageSize = 9;
   const handleOpenArticle = (article) => {
@@ -28,7 +31,7 @@ export default function MyArticlesPage() {
   };
 
   useEffect(() => {
-    handleGetAllArticles(page);
+    handleGetMyArticles(user.user_id, page);
   }, [page]);
 
   return (
@@ -48,7 +51,7 @@ export default function MyArticlesPage() {
             color: "text.primary",
           }}
         >
-          Latest Articles
+          My Articles
         </Typography>
 
         <Typography

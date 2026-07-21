@@ -140,10 +140,7 @@ class ArticlesListCreate(ListCreateAPIView):
         OrderingFilter,
     ]
 
-    filterset_fields = [
-        "tags",
-        "author__username",
-    ]
+    filterset_fields = ["tags", "author__username", "author"]
 
     search_fields = [
         "title",
