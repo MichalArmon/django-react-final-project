@@ -1,3 +1,4 @@
+import ArticleForm from "./components/articles/ArticleForm";
 import ArticlesPage from "./components/articles/ArticlesPage";
 import LoginForm from "./components/uath/LoginForm";
 import RegisterForm from "./components/uath/RegisterForm";
@@ -12,6 +13,7 @@ function App() {
         <Route index element={<ArticlesPage />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/my_articles" element={<ArticleForm />} />
       </Route>
     </Routes>
   );

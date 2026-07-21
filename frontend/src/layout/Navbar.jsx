@@ -1,5 +1,13 @@
 import { AccountCircle } from "@mui/icons-material";
-import { AppBar, Box, IconButton, Tooltip, Avatar } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  IconButton,
+  Tooltip,
+  Avatar,
+  Tabs,
+  Tab,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../providers/UserProvider";
 import SearchBar from "../components/articles/SearchBar";
@@ -39,21 +47,27 @@ function Navbar() {
         }}
       >
         <SearchBar />
+
         {user ? (
-          <Tooltip title={user.name} arrow>
-            <Avatar
-              sx={{
-                width: 40,
-                height: 40,
-                bgcolor: "primary.main",
-                fontSize: "1.25rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
-              }}
-            >
-              {user.name?.charAt(0)}
-            </Avatar>
-          </Tooltip>
+          <Box sx={{ justifyContent: "space-around", display: "flex" }}>
+            <Tabs sx={{ p: 0, m: 0 }}>
+              <Tab label="My articles" />
+            </Tabs>
+            <Tooltip title={user.name} arrow>
+              <Avatar
+                sx={{
+                  width: 40,
+                  height: 40,
+                  bgcolor: "primary.main",
+                  fontSize: "1.25rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                }}
+              >
+                {user.name?.charAt(0)}
+              </Avatar>
+            </Tooltip>
+          </Box>
         ) : (
           <Tooltip title="REGISTER" arrow placement="bottom">
             <IconButton
