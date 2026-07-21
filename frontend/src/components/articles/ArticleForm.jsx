@@ -42,18 +42,6 @@ function ArticleForm() {
             helperText={errors.content}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            label="Author"
-            name="author"
-            type="number"
-            onChange={handleChange}
-            fullWidth
-            value={formDetails.author}
-            error={Boolean(errors.author)}
-            helperText={errors.author}
-          />
-        </Grid>
       </Form>
     </>
   );

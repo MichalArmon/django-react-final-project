@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import axios from "axios";
+import { getToken } from "../services/localStorageService";
 
 const ArticleContext = createContext();
 
@@ -7,6 +8,7 @@ export default function ArticleProvider({ children }) {
   const [articles, setArticles] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [totalArticles, setTotalArticles] = useState(0);
+  const token = getToken();
 
   // ✔️✔️✔️GET ALL ✔️✔️✔️
   async function handleGetAllArticles(page = 1) {
@@ -14,6 +16,9 @@ export default function ArticleProvider({ children }) {
       const response = await axios.get("http://localhost:8000/api/articles/", {
         params: {
           page: page,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       });
 
