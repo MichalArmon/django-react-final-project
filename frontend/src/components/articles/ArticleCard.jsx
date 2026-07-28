@@ -76,7 +76,8 @@ function formatNumber(value = 0) {
 function ArticleCard({ article, onOpen }) {
   const { user } = useUser();
   const navigate = useNavigate("");
-  const isArticleOwner = user && article.author === user.user_id;
+  const isArticleOwner =
+    user && Number(article.author) === Number(user.user_id);
 
   const {
     currentComments,
