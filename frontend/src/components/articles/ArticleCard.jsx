@@ -76,13 +76,8 @@ function formatNumber(value = 0) {
 function ArticleCard({ article, onOpen }) {
   const { user } = useUser();
   const navigate = useNavigate("");
-  const isArticleOwner =
-    user &&
-    (article.author === user.user_id ||
-      article.author === user.id ||
-      article.author_id === user.user_id ||
-      article.author_id === user.id ||
-      article.author_username === user.username);
+  const isArticleOwner = user && article.author === user.user_id;
+
   const {
     currentComments,
 
@@ -320,6 +315,26 @@ function ArticleCard({ article, onOpen }) {
             </Stack>
           </Tooltip>
         </Stack>
+        {isArticleOwner && (
+          <Tooltip title="Edit article">
+            <IconButton
+              onClick={() => navigate(`/articles/${article.id}/edit`)}
+              size="small"
+              aria-label="edit article"
+              sx={{
+                flexShrink: 0,
+                color: "primary.main",
+                border: "1px solid",
+                borderColor: "divider",
+                "&:hover": {
+                  backgroundColor: "rgba(47, 10, 69, 0.06)",
+                },
+              }}
+            >
+              <EditRounded fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
 
         <Tooltip title="Read article">
           <IconButton
