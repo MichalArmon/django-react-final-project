@@ -15,6 +15,7 @@ function App() {
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/my_articles" element={<MyArticlesPage />} />
+        <Route path="/my_articles/create" element={<ArticleForm />} />
       </Route>
     </Routes>
   );

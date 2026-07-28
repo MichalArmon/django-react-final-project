@@ -21,9 +21,6 @@ export default function ArticleProvider({ children }) {
         params: {
           page: page,
         },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       console.log(response.data.results);

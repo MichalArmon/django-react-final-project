@@ -20,11 +20,15 @@ import {
   CheckBoxOutlineBlankRounded,
   FavoriteBorderRounded,
   VisibilityOutlined,
+  EditRounded,
 } from "@mui/icons-material";
 import ArticleComments from "./ArticleComments";
 import { useState } from "react";
 
 import { useComment } from "../../providers/CommentProvider";
+import { useUser } from "../../providers/UserProvider";
+import { useNavigate } from "react-router-dom";
+useNavigate;
 
 function formatDate(dateString) {
   if (!dateString) {
@@ -70,6 +74,15 @@ function formatNumber(value = 0) {
 }
 
 function ArticleCard({ article, onOpen }) {
+  const { user } = useUser();
+  const navigate = useNavigate("");
+  const isArticleOwner =
+    user &&
+    (article.author === user.user_id ||
+      article.author === user.id ||
+      article.author_id === user.user_id ||
+      article.author_id === user.id ||
+      article.author_username === user.username);
   const {
     currentComments,
 

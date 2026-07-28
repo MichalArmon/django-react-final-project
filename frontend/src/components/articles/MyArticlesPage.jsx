@@ -5,12 +5,15 @@ import {
   Stack,
   TextField,
   Typography,
+  Button,
 } from "@mui/material";
 import ArticleCard from "./ArticleCard";
 import { useState, useEffect } from "react";
 
 import { useArticle } from "../../providers/ArticleProvider";
 import { getUser } from "../../services/localStorageService";
+import { AddRounded } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 export default function MyArticlesPage() {
   const {
@@ -25,6 +28,7 @@ export default function MyArticlesPage() {
   } = useArticle([]);
   const [page, setPage] = useState(1);
   const user = getUser();
+  const navigate = useNavigate("");
 
   const pageSize = 9;
   const handleOpenArticle = (article) => {
@@ -63,6 +67,30 @@ export default function MyArticlesPage() {
         >
           Discover the newest stories, insights and updates.
         </Typography>
+        {user && (
+          <Button
+            variant="contained"
+            startIcon={<AddRounded />}
+            onClick={() => navigate("/my_articles/create")}
+            sx={{
+              px: 3.5,
+              py: 1.2,
+              marginBottom: 3.5,
+              borderRadius: "999px",
+              textTransform: "none",
+              fontSize: "1rem",
+              fontWeight: 600,
+              boxShadow: "0 6px 16px rgba(0,0,0,0.14)",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: "0 9px 20px rgba(0,0,0,0.18)",
+              },
+              transition: "0.2s",
+            }}
+          >
+            Create New Article
+          </Button>
+        )}
 
         <Box
           sx={{
