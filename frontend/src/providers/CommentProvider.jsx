@@ -1,24 +1,18 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { createContext, useContext, useState } from "react";
+
+import api from "../services/apiService";
 import commentForServer from "../normalization/commentForServer";
-import { useUser } from "./UserProvider";
-import { getToken } from "../services/localStorageService";
 
 const CommentContext = createContext();
 
 export default function CommentProvider({ children }) {
-  const [comments, setComments] = useState([]);
-
   const [currentComments, setCurrentComments] = useState([]);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
-  const { refreshAccessToken } = useUser();
 
-  // ✔️✔️✔️CREATE ✔️✔️✔️
-
+  // ✔️✔️✔️ CREATE ✔️✔️✔️
   async function handleAddComment(commentData) {
     const commentToServer = commentForServer(commentData);
-
     const content = commentToServer.content?.trim();
 
     if (!content || isSending) return;
@@ -27,76 +21,56 @@ export default function CommentProvider({ children }) {
       setIsSending(true);
       setError("");
 
-      const token = localStorage.getItem("access token");
-
-      const response = await axios.post(
-        "http://localhost:8000/api/comments/",
-        commentToServer,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      setComments((prev) => [...prev, response.data]);
+      const response = await api.post("comments/", commentToServer);
 
       return response.data;
     } catch (error) {
-      console.error(error.response?.data || error);
+      console.error(
+        "Add comment failed:",
+        error.response?.data || error.message,
+      );
 
       setError(
         error.response?.data?.detail || "The comment could not be added.",
       );
+
+      throw error;
     } finally {
       setIsSending(false);
     }
   }
 
-  // ✔️✔️✔️GET by Article ✔️✔️✔️
-
+  // ✔️✔️✔️ GET BY ARTICLE ✔️✔️✔️
   async function handleGetByArticle(articleId) {
-    let token = getToken();
     try {
-      const response = await axios.get(
-        `http://localhost:8000/api/comments/?article=${articleId}`,
+      setError("");
 
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await api.get("comments/", {
+        params: {
+          article: articleId,
         },
-      );
+      });
 
       setCurrentComments(response.data.results);
 
       return response.data;
     } catch (error) {
-      if (error.response?.status !== 401) {
-        throw error;
-      }
-
-      token = await refreshAccessToken();
-
-      if (!token) {
-        throw error;
-      }
-      console.error(error.response?.data || error);
+      console.error(
+        "Get comments failed:",
+        error.response?.data || error.message,
+      );
 
       setError(
-        error.response?.data?.detail || "The comment could not be added.",
+        error.response?.data?.detail || "The comments could not be loaded.",
       );
-    } finally {
-      setIsSending(false);
+
+      throw error;
     }
   }
 
   return (
     <CommentContext.Provider
       value={{
-        comments,
-        setComments,
-
         isSending,
         setIsSending,
         error,
@@ -114,6 +88,10 @@ export default function CommentProvider({ children }) {
 
 export const useComment = () => {
   const context = useContext(CommentContext);
-  if (!context) throw Error("useComments must be used within a NameProvider");
+
+  if (!context) {
+    throw Error("useComment must be used within a CommentProvider");
+  }
+
   return context;
 };

@@ -1,16 +1,10 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-
 import {
   Avatar,
   Box,
   Button,
   CircularProgress,
-  Collapse,
-  Divider,
   Stack,
   TextField,
-  Typography,
 } from "@mui/material";
 
 import { SendToMobileRounded } from "@mui/icons-material";
@@ -19,13 +13,36 @@ import useForm from "../../hooks/useForm";
 import initialDataComment from "../../initialData/initialDataComment";
 import { commentSchema } from "../../models/Comment";
 
-function CreateComment({ articleId }) {
-  const initialDataCommentNew = { ...initialDataComment, article: articleId };
-  const { handleAddComment, isSending } = useComment();
+function CreateComment({ articleId, setShowComments, onCommentCreated }) {
+  const initialDataCommentNew = {
+    ...initialDataComment,
+    article: articleId,
+  };
+
+  const { handleAddComment, handleGetByArticle, isSending } = useComment();
+
+  const handleSubmitComment = async (data) => {
+    const newComment = await handleAddComment(data);
+
+    if (!newComment) return;
+
+    try {
+      const response = await handleGetByArticle(articleId);
+
+      const updatedCount = response?.results?.length ?? 0;
+
+      onCommentCreated?.(updatedCount);
+    } catch (error) {
+      console.error("Updating comments failed:", error);
+    } finally {
+      setShowComments(false);
+    }
+  };
+
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
     initialDataCommentNew,
     commentSchema,
-    handleAddComment,
+    handleSubmitComment,
   );
 
   return (

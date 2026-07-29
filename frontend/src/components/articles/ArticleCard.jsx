@@ -76,6 +76,7 @@ function formatNumber(value = 0) {
 }
 
 function ArticleCard({ article }) {
+  const [showComments, setShowComments] = useState(false);
   const { user } = useUser();
   const { handleDeleteArticle } = useArticle();
   const navigate = useNavigate();
@@ -100,7 +101,6 @@ function ArticleCard({ article }) {
 
     handleGetByArticle,
   } = useComment();
-  const [showComments, setShowComments] = useState(false);
 
   const {
     id,
@@ -120,6 +120,7 @@ function ArticleCard({ article }) {
     await handleGetByArticle(id);
     setShowComments((prev) => !prev);
   };
+  const [commentsCount, setCommentsCount] = useState(comments?.length || 0);
   const visibleTags = tags.slice(0, 3);
   const extraTags = Math.max(0, tags.length - visibleTags.length);
   return (
@@ -338,7 +339,7 @@ function ArticleCard({ article }) {
               <Stack direction="row" spacing={0.6} alignItems="center">
                 <CheckBoxOutlineBlankRounded sx={{ fontSize: 17 }} />
 
-                <Typography variant="caption">{comments.length}</Typography>
+                <Typography variant="caption">{commentsCount}</Typography>
               </Stack>
             </IconButton>
           </Tooltip>
@@ -406,7 +407,11 @@ function ArticleCard({ article }) {
         articleName={title}
         comments={currentComments}
         showComments={showComments}
+        setShowComments={setShowComments}
         id={id}
+        onCommentCreated={() => {
+          setCommentsCount((prev) => prev + 1);
+        }}
       />
     </Card>
   );
