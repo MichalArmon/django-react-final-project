@@ -31,4 +31,9 @@ urlpatterns = [
         views.ProductListCreate.as_view(),
         name="products",
     ),
+    path(
+        "articles/<int:pk>/like/",
+        views.ArticleLikeView.as_view(),
+        name="article-like",
+    ),
 ]

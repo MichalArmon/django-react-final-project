@@ -54,6 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Tag
         fields = "__all__"
@@ -79,6 +80,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     author_username = serializers.CharField(source="author.username", read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
@@ -95,8 +97,17 @@ class ArticleSerializer(serializers.ModelSerializer):
             "word_count",
             "is_breaking_news",
             "comments",
+            "is_liked",
         )
         read_only_fields = ("author",)
+
+    def get_is_liked(self, obj):
+        request = self.context.get("request")
+
+        if not request or not request.user.is_authenticated:
+            return False
+
+        return obj.liked_by.filter(pk=request.user.pk).exists()
 
 
 class ProductSerializer(serializers.ModelSerializer):

@@ -25,6 +25,8 @@ from .serializers import (
 from django.contrib.auth.models import User
 from .models import Article, Product, Comment
 from .permissions import IsArticleOwner
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 
 # הנתיב לתיקייה שבה נמצאים קובצי המודל
 MODELS_DIR = Path(__file__).resolve().parent / "ml_models"
@@ -177,6 +179,33 @@ class ArticleDetails(RetrieveUpdateDestroyAPIView):
             return [AllowAny()]
 
         return [IsAuthenticated(), IsArticleOwner()]
+
+
+class ArticleLikeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        article = get_object_or_404(Article, pk=pk)
+        user = request.user
+
+        if article.liked_by.filter(pk=user.pk).exists():
+            article.liked_by.remove(user)
+            article.likes = max(0, article.likes - 1)
+            liked = False
+        else:
+            article.liked_by.add(user)
+            article.likes += 1
+            liked = True
+
+        article.save(update_fields=["likes"])
+
+        return Response(
+            {
+                "id": article.id,
+                "liked": liked,
+                "likes": article.likes,
+            }
+        )
 
 
 class CommentListCreate(ListCreateAPIView):

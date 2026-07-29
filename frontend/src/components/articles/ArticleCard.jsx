@@ -21,8 +21,8 @@ import {
   FavoriteBorderRounded,
   VisibilityOutlined,
   EditRounded,
-  DeleteRounded,
   DeleteOutlineRounded,
+  FavoriteRounded,
 } from "@mui/icons-material";
 import ArticleComments from "./ArticleComments";
 import { useState } from "react";
@@ -76,9 +76,25 @@ function formatNumber(value = 0) {
 }
 
 function ArticleCard({ article }) {
+  const {
+    id,
+    title,
+    content,
+    author_username,
+    published_at,
+    views = 0,
+    likes = 0,
+    word_count = 0,
+    tags = [],
+    comments = [],
+    is_breaking_news = false,
+  } = article;
   const [showComments, setShowComments] = useState(false);
+  const [likesCount, setLikesCount] = useState(likes);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
   const { user } = useUser();
-  const { handleDeleteArticle } = useArticle();
+  const { handleDeleteArticle, handleLikeArticle } = useArticle();
   const navigate = useNavigate();
   const handleDelete = async () => {
     const isConfirmed = window.confirm(
@@ -93,6 +109,23 @@ function ArticleCard({ article }) {
       console.error("Delete failed:", error);
     }
   };
+
+  const handleLike = async () => {
+    if (isLiking) return;
+
+    try {
+      setIsLiking(true);
+
+      const result = await handleLikeArticle(id);
+
+      setLikesCount(result.likes);
+      setIsLiked(result.liked);
+    } catch (error) {
+      console.error("Like failed:", error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
   const isArticleOwner =
     user && Number(article.author) === Number(user.user_id);
 
@@ -102,19 +135,6 @@ function ArticleCard({ article }) {
     handleGetByArticle,
   } = useComment();
 
-  const {
-    id,
-    title,
-    content,
-    author_username,
-    published_at,
-    views = 0,
-    likes = 0,
-    word_count = 0,
-    tags = [],
-    comments = [],
-    is_breaking_news = false,
-  } = article;
   const titleFixed = title.split("#")[0];
   const handleToggleComments = async () => {
     await handleGetByArticle(id);
@@ -318,17 +338,25 @@ function ArticleCard({ article }) {
             </Stack>
           </Tooltip>
 
-          <Tooltip title="Likes">
-            <Stack
-              direction="row"
-              spacing={0.5}
-              alignItems="center"
-              sx={{ flexShrink: 0 }}
+          <Tooltip title={isLiked ? "Unlike article" : "Like article"}>
+            <IconButton
+              onClick={handleLike}
+              disabled={isLiking}
+              size="small"
+              aria-label={isLiked ? "unlike article" : "like article"}
             >
-              <FavoriteBorderRounded sx={{ fontSize: 18 }} />
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                {isLiked ? (
+                  <FavoriteRounded sx={{ fontSize: 18 }} />
+                ) : (
+                  <FavoriteBorderRounded sx={{ fontSize: 18 }} />
+                )}
 
-              <Typography variant="caption">{formatNumber(likes)}</Typography>
-            </Stack>
+                <Typography variant="caption">
+                  {formatNumber(likesCount)}
+                </Typography>
+              </Stack>
+            </IconButton>
           </Tooltip>
           <Tooltip title={showComments ? "Hide comments" : "Show comments"}>
             <IconButton

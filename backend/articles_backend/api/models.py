@@ -34,6 +34,11 @@ class Article(models.Model):
     # Extra fields for ML / prediction
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
+    liked_by = models.ManyToManyField(
+        User,
+        related_name="liked_articles",
+        blank=True,
+    )
     word_count = models.IntegerField(default=0)
 
     is_breaking_news = models.BooleanField(default=False)

@@ -170,6 +170,53 @@ export default function ArticleProvider({ children }) {
     }
   }
 
+  // ✔️✔️✔️ LIKE ARTICLE ✔️✔️✔️
+  async function handleLikeArticle(articleId) {
+    try {
+      const response = await api.patch(`articles/${articleId}/like/`);
+
+      setArticles((prev) =>
+        prev.map((article) =>
+          article.id === Number(articleId)
+            ? {
+                ...article,
+                likes: response.data.likes,
+              }
+            : article,
+        ),
+      );
+
+      setMyArticles((prev) =>
+        prev.map((article) =>
+          article.id === Number(articleId)
+            ? {
+                ...article,
+                likes: response.data.likes,
+              }
+            : article,
+        ),
+      );
+
+      setArticle((prev) =>
+        prev?.id === Number(articleId)
+          ? {
+              ...prev,
+              likes: response.data.likes,
+            }
+          : prev,
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Like article failed:",
+        error.response?.data || error.message,
+      );
+
+      throw error;
+    }
+  }
+
   return (
     <ArticleContext.Provider
       value={{
@@ -189,6 +236,7 @@ export default function ArticleProvider({ children }) {
         setArticle,
         handleEditArticle,
         handleDeleteArticle,
+        handleLikeArticle,
       }}
     >
       {children}
