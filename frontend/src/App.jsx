@@ -1,4 +1,5 @@
 import ArticleForm from "./components/articles/ArticleForm";
+import ArticlePage from "./components/articles/ArticlePage";
 import ArticlesPage from "./components/articles/ArticlesPage";
 import MyArticlesPage from "./components/articles/MyArticlesPage";
 import LoginForm from "./components/uath/LoginForm";
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/my_articles" element={<MyArticlesPage />} />
         <Route path="/my_articles/create" element={<ArticleForm />} />
+        <Route path="/articles/:articleId" element={<ArticlePage />} />
       </Route>
     </Routes>
   );

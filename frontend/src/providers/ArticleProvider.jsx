@@ -8,6 +8,7 @@ const ArticleContext = createContext();
 export default function ArticleProvider({ children }) {
   const { refreshAccessToken } = useUser();
   const [articles, setArticles] = useState([]);
+  const [article, setArticle] = useState({});
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [myArticles, setMyArticles] = useState([]);
   const [totalArticles, setTotalArticles] = useState(0);
@@ -102,12 +103,23 @@ export default function ArticleProvider({ children }) {
       setTotalArticles(response.data.count);
       return response.data.results;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Status:", error.response?.status);
-        console.error("Data:", error.response?.data);
-      }
+      if (error.response?.status === 401) {
+        try {
+          const newToken = await refreshAccessToken();
 
-      throw error;
+          const response = await axios.post(URL, data, {
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+
+          console.log(response.data);
+        } catch (refreshError) {
+          console.log("Refresh failed:", refreshError.response?.data);
+        }
+      } else {
+        console.log(error.response?.data);
+      }
     }
   }
   // ✔️✔️✔️Create Article ✔️✔️✔️
@@ -141,6 +153,18 @@ export default function ArticleProvider({ children }) {
     }
   };
 
+  // ✔️✔️✔️Get one Article ✔️✔️✔️
+  const handleGetOneArticle = async (id) => {
+    try {
+      const response = await axios.get(`${URL}${id}/`);
+      setArticle(response.data);
+
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <ArticleContext.Provider
       value={{
@@ -155,6 +179,9 @@ export default function ArticleProvider({ children }) {
         handleSubmitCreateArticle,
         handleGetMyArticles,
         myArticles,
+        handleGetOneArticle,
+        article,
+        setArticle,
       }}
     >
       {children}

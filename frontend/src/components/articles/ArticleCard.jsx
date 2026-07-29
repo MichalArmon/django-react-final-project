@@ -28,7 +28,6 @@ import { useState } from "react";
 import { useComment } from "../../providers/CommentProvider";
 import { useUser } from "../../providers/UserProvider";
 import { useNavigate } from "react-router-dom";
-useNavigate;
 
 function formatDate(dateString) {
   if (!dateString) {
@@ -75,7 +74,7 @@ function formatNumber(value = 0) {
 
 function ArticleCard({ article, onOpen }) {
   const { user } = useUser();
-  const navigate = useNavigate("");
+  const navigate = useNavigate(-1);
   const isArticleOwner =
     user && Number(article.author) === Number(user.user_id);
 
@@ -339,7 +338,7 @@ function ArticleCard({ article, onOpen }) {
 
         <Tooltip title="Read article">
           <IconButton
-            onClick={() => onOpen?.(article)}
+            onClick={() => navigate(`/articles/${id}`)}
             size="small"
             sx={{
               flexShrink: 0,
