@@ -8,19 +8,17 @@ import { Link } from "react-router-dom";
 
 import { articleSchema } from "../../models/Article";
 
-import initialDataArticle from "../../initialData/initialDataArticle";
 import { useArticle } from "../../providers/ArticleProvider";
 
-function ArticleForm() {
-  const { handleSubmitCreateArticle } = useArticle();
+function ArticleForm({ handleSubmitArticle, initialDataArticle, title }) {
   const { handleChange, handleSubmit, errors, formDetails } = useForm(
     initialDataArticle,
     articleSchema,
-    handleSubmitCreateArticle,
+    handleSubmitArticle,
   );
   return (
     <>
-      <Form onSubmit={handleSubmit} title="Publish Your Story">
+      <Form onSubmit={handleSubmit} title={title}>
         <Grid item xs={12} md={12}>
           <TextField
             label="Title"

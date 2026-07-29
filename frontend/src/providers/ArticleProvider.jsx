@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import axios from "axios";
 import { getToken } from "../services/localStorageService";
 import { useUser } from "./UserProvider";
+import { useNavigate } from "react-router-dom";
 
 const ArticleContext = createContext();
 
@@ -14,6 +15,7 @@ export default function ArticleProvider({ children }) {
   const [totalArticles, setTotalArticles] = useState(0);
   const token = getToken();
   const URL = "http://localhost:8000/api/articles/";
+  const navigate = useNavigate("");
 
   // ✔️✔️✔️GET ALL ✔️✔️✔️
   async function handleGetAllArticles(page = 1) {
@@ -132,6 +134,8 @@ export default function ArticleProvider({ children }) {
       });
 
       console.log(response.data);
+      setMyArticles((prev) => [...prev, response.data]);
+      navigate(-1);
     } catch (error) {
       if (error.response?.status === 401) {
         try {
