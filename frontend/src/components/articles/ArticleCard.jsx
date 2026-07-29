@@ -84,6 +84,7 @@ function ArticleCard({ article }) {
     published_at,
     views = 0,
     likes = 0,
+    is_liked = false,
     word_count = 0,
     tags = [],
     comments = [],
@@ -91,7 +92,7 @@ function ArticleCard({ article }) {
   } = article;
   const [showComments, setShowComments] = useState(false);
   const [likesCount, setLikesCount] = useState(likes);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(is_liked);
   const [isLiking, setIsLiking] = useState(false);
   const { user } = useUser();
   const { handleDeleteArticle, handleLikeArticle } = useArticle();
