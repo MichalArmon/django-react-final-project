@@ -164,6 +164,7 @@ export default function ArticleProvider({ children }) {
       setArticle(response.data);
 
       console.log(response.data);
+      return response.data;
     } catch (error) {
       console.log(error);
     }

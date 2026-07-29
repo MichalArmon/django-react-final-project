@@ -1,4 +1,4 @@
-import initialDataArticle from "../../initialData/initialDataArticle";
+import { initialDataArticle } from "../../initialData/initialDataArticle";
 import { useArticle } from "../../providers/ArticleProvider";
 
 import ArticleForm from "./ArticleForm";

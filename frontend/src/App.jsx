@@ -9,6 +9,7 @@ import RegisterForm from "./components/uath/RegisterForm";
 
 import Layout from "./layout/Layout";
 import { Routes, Route, Navigate } from "react-router-dom";
+import EditArticle from "./components/articles/EditArticle";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/my_articles" element={<MyArticlesPage />} />
         <Route path="/my_articles/create" element={<CreateArticle />} />
         <Route path="/articles/:articleId" element={<ArticlePage />} />
+        <Route path="/articles/:articleId/edit" element={<EditArticle />} />
       </Route>
     </Routes>
   );
