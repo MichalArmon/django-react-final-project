@@ -21,6 +21,8 @@ import {
   FavoriteBorderRounded,
   VisibilityOutlined,
   EditRounded,
+  DeleteRounded,
+  DeleteOutlineRounded,
 } from "@mui/icons-material";
 import ArticleComments from "./ArticleComments";
 import { useState } from "react";
@@ -28,6 +30,7 @@ import { useState } from "react";
 import { useComment } from "../../providers/CommentProvider";
 import { useUser } from "../../providers/UserProvider";
 import { useNavigate } from "react-router-dom";
+import { useArticle } from "../../providers/ArticleProvider";
 
 function formatDate(dateString) {
   if (!dateString) {
@@ -72,9 +75,23 @@ function formatNumber(value = 0) {
   return value.toString();
 }
 
-function ArticleCard({ article, onOpen }) {
+function ArticleCard({ article }) {
   const { user } = useUser();
-  const navigate = useNavigate(-1);
+  const { handleDeleteArticle } = useArticle();
+  const navigate = useNavigate();
+  const handleDelete = async () => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this article?",
+    );
+
+    if (!isConfirmed) return;
+
+    try {
+      await handleDeleteArticle(id);
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
   const isArticleOwner =
     user && Number(article.author) === Number(user.user_id);
 
@@ -109,6 +126,7 @@ function ArticleCard({ article, onOpen }) {
     <Card
       elevation={0}
       sx={{
+        position: "relative",
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -132,6 +150,34 @@ function ArticleCard({ article, onOpen }) {
             : "linear-gradient(90deg, #2f0a45, #ba68c8)",
         }}
       />
+      {isArticleOwner && (
+        <Tooltip title="Delete article">
+          <IconButton
+            onClick={handleDelete}
+            size="small"
+            aria-label="delete article"
+            sx={{
+              position: "absolute",
+              top: 16,
+              right: 16,
+              zIndex: 2,
+              color: "text.secondary",
+              backgroundColor: "background.paper",
+              border: "1px solid",
+              borderColor: "divider",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+
+              "&:hover": {
+                color: "error.main",
+                backgroundColor: "rgba(211, 47, 47, 0.08)",
+                borderColor: "error.light",
+              },
+            }}
+          >
+            <DeleteOutlineRounded fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
       <CardContent
         sx={{
           flexGrow: 1,
@@ -316,24 +362,26 @@ function ArticleCard({ article, onOpen }) {
           </Tooltip>
         </Stack>
         {isArticleOwner && (
-          <Tooltip title="Edit article">
-            <IconButton
-              onClick={() => navigate(`/articles/${article.id}/edit`)}
-              size="small"
-              aria-label="edit article"
-              sx={{
-                flexShrink: 0,
-                color: "primary.main",
-                border: "1px solid",
-                borderColor: "divider",
-                "&:hover": {
-                  backgroundColor: "rgba(47, 10, 69, 0.06)",
-                },
-              }}
-            >
-              <EditRounded fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          <>
+            <Tooltip title="Edit article">
+              <IconButton
+                onClick={() => navigate(`/articles/${article.id}/edit`)}
+                size="small"
+                aria-label="edit article"
+                sx={{
+                  flexShrink: 0,
+                  color: "primary.main",
+                  border: "1px solid",
+                  borderColor: "divider",
+                  "&:hover": {
+                    backgroundColor: "rgba(47, 10, 69, 0.06)",
+                  },
+                }}
+              >
+                <EditRounded fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </>
         )}
 
         <Tooltip title="Read article">

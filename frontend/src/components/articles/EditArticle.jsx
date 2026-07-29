@@ -8,12 +8,15 @@ import { Box } from "@mui/material";
 
 function EditArticle() {
   const { articleId } = useParams();
-  const { handleSubmitCreateArticle, handleGetOneArticle } = useArticle();
+  const { handleEditArticle, handleGetOneArticle } = useArticle();
   const [initial, setInitial] = useState(null);
   const getInitialData = async () => {
     const article = await handleGetOneArticle(articleId);
     const initialEditDataNew = initialEditDataArticle(article);
     setInitial(initialEditDataNew);
+  };
+  const handleSubmitEditArticle = async (data) => {
+    await handleEditArticle(articleId, data);
   };
 
   useEffect(() => {
@@ -27,7 +30,7 @@ function EditArticle() {
   return (
     <>
       <ArticleForm
-        handleSubmitArticle={handleSubmitCreateArticle}
+        handleSubmitArticle={handleSubmitEditArticle}
         initialDataArticle={initial}
         title="Edit Article"
       />

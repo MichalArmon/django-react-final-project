@@ -201,6 +201,30 @@ export default function ArticleProvider({ children }) {
     }
   };
 
+  // ✔️✔️✔️DELETE Article ✔️✔️✔️
+  async function handleDeleteArticle(articleId) {
+    try {
+      await axios.delete(`${URL}${articleId}/`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+
+      setArticles((prev) =>
+        prev.filter((article) => article.id !== Number(articleId)),
+      );
+
+      setMyArticles((prev) =>
+        prev.filter((article) => article.id !== Number(articleId)),
+      );
+    } catch (error) {
+      console.error("Status:", error.response?.status);
+      console.error("Data:", error.response?.data);
+
+      throw error;
+    }
+  }
+
   return (
     <ArticleContext.Provider
       value={{
@@ -219,6 +243,7 @@ export default function ArticleProvider({ children }) {
         article,
         setArticle,
         handleEditArticle,
+        handleDeleteArticle,
       }}
     >
       {children}
