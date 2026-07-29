@@ -5,19 +5,20 @@ import loginUserToServer from "../normalization/loginForServer";
 
 import {
   getUser,
-  getRefreshToken,
   setAccessTokenInLocalStorage,
   setRefreshTokenInLocalStorage,
-  removeTokens,
 } from "../services/localStorageService";
 import { useNavigate } from "react-router-dom";
+import { useSnack } from "./SnackBarProvider";
 
 const UserContext = createContext();
 
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(() => getUser());
+
   const URL = "http://localhost:8000/api";
   const navigate = useNavigate("");
+  const { setSnack } = useSnack();
 
   // ✔️✔️✔️register User ✔️✔️✔️
 
@@ -31,15 +32,13 @@ export default function UserProvider({ children }) {
         email: userDetailsForServer.email,
         password: userDetailsForServer.password,
       };
+      setSnack("success", "Account created successfully");
       await handleSubmitLoginUser(data);
-
-      // setSnack("success", "Account created successfully!");
-      // await handleSubmitLoginUser(userDetailsForServer);
     } catch (error) {
-      // setSnack("error", error.response.data);
       if (error.response) {
         console.log(error.response.data);
       }
+      setSnack("error", "The account could not be created");
     }
   };
 
@@ -58,13 +57,13 @@ export default function UserProvider({ children }) {
       setRefreshTokenInLocalStorage(refreshToken);
       const user = getUser(response.data);
       console.log(user);
-      // setOpenLogin(false);
+
       setUser(user);
       navigate("/");
-      // handleGetUserFavorites();
-      // setSnack("success", "You are Logged in successfully!");
+
+      setSnack("success", "You are Logged in successfully!");
     } catch (error) {
-      // setSnack("error", error.response.data.message);
+      setSnack("error", error.response.data.message);
       if (error.response) {
         console.log(error.response.data);
       }

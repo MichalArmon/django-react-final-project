@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import api from "../services/apiService";
+import { useSnack } from "./SnackBarProvider";
 
 const ArticleContext = createContext();
 
@@ -14,6 +15,7 @@ export default function ArticleProvider({ children }) {
 
   const URL = "articles/";
   const navigate = useNavigate();
+  const { setSnack } = useSnack();
 
   // ✔️✔️✔️ GET ALL ✔️✔️✔️
   async function handleGetAllArticles(page = 1) {
@@ -98,6 +100,7 @@ export default function ArticleProvider({ children }) {
       console.log(response.data);
 
       setMyArticles((prev) => [...prev, response.data]);
+      setSnack("success", "Article created successfully");
 
       navigate(-1);
 
@@ -107,6 +110,7 @@ export default function ArticleProvider({ children }) {
         "Create article failed:",
         error.response?.data || error.message,
       );
+      setSnack("error", "The article could not be created");
 
       throw error;
     }
@@ -137,6 +141,7 @@ export default function ArticleProvider({ children }) {
       setArticle(response.data);
 
       console.log(response.data);
+      setSnack("success", "Article updated successfully");
       navigate(-1);
 
       return response.data;
@@ -145,6 +150,7 @@ export default function ArticleProvider({ children }) {
         "Edit article failed:",
         error.response?.data || error.message,
       );
+      setSnack("error", "The article could not be updated");
 
       throw error;
     }
@@ -162,9 +168,11 @@ export default function ArticleProvider({ children }) {
       setMyArticles((prev) =>
         prev.filter((article) => article.id !== Number(articleId)),
       );
+      setSnack("success", "Article deleted successfully");
     } catch (error) {
       console.error("Status:", error.response?.status);
       console.error("Data:", error.response?.data);
+      setSnack("error", "The article could not be deleted");
 
       throw error;
     }

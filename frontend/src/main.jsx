@@ -9,19 +9,21 @@ import { BrowserRouter } from "react-router-dom";
 import UserProvider from "./providers/UserProvider.jsx";
 import ArticleProvider from "./providers/ArticleProvider.jsx";
 import CommentProvider from "./providers/CommentProvider.jsx";
-
+import SnackbarProvider from "./providers/SnackBarProvider.jsx";
 BrowserRouter;
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <UserProvider>
-          <ArticleProvider>
-            <CommentProvider>
-              <App />
-            </CommentProvider>
-          </ArticleProvider>
-        </UserProvider>
+        <SnackbarProvider>
+          <UserProvider>
+            <ArticleProvider>
+              <CommentProvider>
+                <App />
+              </CommentProvider>
+            </ArticleProvider>
+          </UserProvider>
+        </SnackbarProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,

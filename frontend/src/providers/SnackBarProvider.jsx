@@ -19,16 +19,16 @@ export default function SnackbarProvider({ children }) {
   return (
     <>
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         open={isSnackOpen}
         onClose={() => setOpenSnack((prev) => !prev)}
-        autoHideDuration={5000}
+        autoHideDuration={3500}
       >
         <Alert severity={snackColor} variant={snackVariant}>
           {snackMessage}
         </Alert>
       </Snackbar>
-      <SnackbarContext.Provider value={setSnack}>
+      <SnackbarContext.Provider value={{ setSnack }}>
         {children}
       </SnackbarContext.Provider>
     </>
