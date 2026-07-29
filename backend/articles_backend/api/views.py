@@ -24,6 +24,7 @@ from .serializers import (
 )
 from django.contrib.auth.models import User
 from .models import Article, Product, Comment
+from .permissions import IsArticleOwner
 
 # הנתיב לתיקייה שבה נמצאים קובצי המודל
 MODELS_DIR = Path(__file__).resolve().parent / "ml_models"
@@ -170,6 +171,12 @@ class ArticlesListCreate(ListCreateAPIView):
 class ArticleDetails(RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [IsAuthenticated(), IsArticleOwner()]
 
 
 class CommentListCreate(ListCreateAPIView):

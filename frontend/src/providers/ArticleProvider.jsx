@@ -170,6 +170,37 @@ export default function ArticleProvider({ children }) {
     }
   };
 
+  // ✔️✔️✔️Edit Article ✔️✔️✔️
+  const handleEditArticle = async (articleId, articleData) => {
+    try {
+      const response = await axios.put(`${URL}${articleId}/`, articleData, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      setArticle(response.data);
+
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        try {
+          const newToken = await refreshAccessToken();
+
+          const response = await axios.put(`${URL}${articleId}/`, articleData, {
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+
+          console.log(response.data);
+        } catch (refreshError) {
+          console.log("Refresh failed:", refreshError.response?.data);
+        }
+      } else {
+        console.log(error.response?.data);
+      }
+    }
+  };
+
   return (
     <ArticleContext.Provider
       value={{
@@ -187,6 +218,7 @@ export default function ArticleProvider({ children }) {
         handleGetOneArticle,
         article,
         setArticle,
+        handleEditArticle,
       }}
     >
       {children}
