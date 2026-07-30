@@ -1,4 +1,5 @@
 import { AccountCircle } from "@mui/icons-material";
+
 import {
   AppBar,
   Avatar,
@@ -9,6 +10,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -22,22 +24,7 @@ function DesktopNavbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [registerIsOpen, setRegisterIsOpen] = useState(false);
-
-  const [loginIsOpen, setLoginIsOpen] = useState(false);
-
   const [anchorEl, setAnchorEl] = useState(null);
-
-  const toggleRegisterOpen = () => {
-    setRegisterIsOpen((prev) => !prev);
-    setLoginIsOpen((prev) => !prev);
-
-    if (registerIsOpen || loginIsOpen) {
-      navigate("/register");
-    } else {
-      navigate("/");
-    }
-  };
 
   const handleOpenUserMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -188,7 +175,7 @@ function DesktopNavbar() {
           <Tooltip title="REGISTER" arrow placement="bottom">
             <IconButton
               aria-label="Register"
-              onClick={toggleRegisterOpen}
+              onClick={() => navigate("/register")}
               sx={{
                 width: 40,
                 height: 40,
