@@ -18,11 +18,29 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = (
+            "bio",
+            "city",
+            "age",
+            "experience_years",
+            "role",
+        )
+
+
+class UserSelfProfileSerializer(serializers.ModelSerializer):
     role = serializers.CharField(read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = "bio", "city", "age", "experience_years", "role"
+        fields = (
+            "bio",
+            "city",
+            "age",
+            "experience_years",
+            "role",
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -133,6 +151,69 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class TagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tag
+        fields = "__all__"
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = (
+            "id",
+            "article",
+            "user",
+            "username",
+            "content",
+            "created_at",
+        )
+        read_only_fields = ("user", "created_at")
+
+
+class ArticleSerializer(serializers.ModelSerializer):
+    author_username = serializers.CharField(source="author.username", read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    is_liked = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Article
+        fields = (
+            "id",
+            "title",
+            "content",
+            "author",
+            "author_username",
+            "tags",
+            "published_at",
+            "views",
+            "likes",
+            "word_count",
+            "is_breaking_news",
+            "comments",
+            "is_liked",
+        )
+        read_only_fields = ("author",)
+
+    def get_is_liked(self, obj):
+        request = self.context.get("request")
+
+        if not request or not request.user.is_authenticated:
+            return False
+
+        return obj.liked_by.filter(pk=request.user.pk).exists()
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+
 class UserSelfUpdateSerializer(serializers.ModelSerializer):
     profile = UserSelfProfileSerializer()
 
@@ -198,66 +279,3 @@ class UserSelfUpdateSerializer(serializers.ModelSerializer):
             profile.save()
 
         return instance
-
-
-class TagSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Tag
-        fields = "__all__"
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source="user.username", read_only=True)
-
-    class Meta:
-        model = Comment
-        fields = (
-            "id",
-            "article",
-            "user",
-            "username",
-            "content",
-            "created_at",
-        )
-        read_only_fields = ("user", "created_at")
-
-
-class ArticleSerializer(serializers.ModelSerializer):
-    author_username = serializers.CharField(source="author.username", read_only=True)
-    comments = CommentSerializer(many=True, read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
-    is_liked = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Article
-        fields = (
-            "id",
-            "title",
-            "content",
-            "author",
-            "author_username",
-            "tags",
-            "published_at",
-            "views",
-            "likes",
-            "word_count",
-            "is_breaking_news",
-            "comments",
-            "is_liked",
-        )
-        read_only_fields = ("author",)
-
-    def get_is_liked(self, obj):
-        request = self.context.get("request")
-
-        if not request or not request.user.is_authenticated:
-            return False
-
-        return obj.liked_by.filter(pk=request.user.pk).exists()
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = "__all__"

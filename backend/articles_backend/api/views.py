@@ -24,7 +24,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from django.db.models import F
 from .models import Article, Product, Comment
 from .permissions import (
     IsManager,
@@ -243,12 +243,22 @@ class ArticleDetails(RetrieveUpdateDestroyAPIView):
         if self.request.method == "GET":
             return [AllowAny()]
 
-        # לפי מסמך הדרישות:
         # רק מנהל יכול לערוך ולמחוק כתבות
         return [
             IsAuthenticated(),
             IsManager(),
         ]
+
+    def retrieve(self, request, *args, **kwargs):
+        article = self.get_object()
+
+        Article.objects.filter(pk=article.pk).update(views=F("views") + 1)
+
+        article.refresh_from_db()
+
+        serializer = self.get_serializer(article)
+
+        return Response(serializer.data)
 
 
 # 👍 Article Like Toggle

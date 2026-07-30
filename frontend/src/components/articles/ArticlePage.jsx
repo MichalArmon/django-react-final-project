@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 
 import {
   Avatar,
@@ -23,6 +22,7 @@ import {
   BoltRounded,
   EditRounded,
   FavoriteBorderRounded,
+  FavoriteRounded,
   VisibilityOutlined,
 } from "@mui/icons-material";
 
@@ -76,14 +76,41 @@ export default function ArticlePage() {
   const { articleId } = useParams();
   const navigate = useNavigate();
   const { user } = useUser();
-  const { article, setArticle, handleGetOneArticle } = useArticle();
+  const { article, setArticle, handleGetOneArticle, handleLikeArticle } =
+    useArticle();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isLiking, setIsLiking] = useState(false);
+
+  const loadedArticleId = useRef(null);
 
   useEffect(() => {
+    if (loadedArticleId.current === articleId) return;
+
+    loadedArticleId.current = articleId;
     handleGetOneArticle(articleId);
   }, [articleId]);
+
+  const handleLike = async () => {
+    if (!user || isLiking) return;
+
+    try {
+      setIsLiking(true);
+
+      const result = await handleLikeArticle(articleId);
+
+      setArticle((prev) => ({
+        ...prev,
+        likes: result.likes,
+        is_liked: result.liked,
+      }));
+    } catch (error) {
+      console.error("Like failed:", error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -130,6 +157,7 @@ export default function ArticlePage() {
     word_count = 0,
     tags = [],
     is_breaking_news = false,
+    is_liked = false,
   } = article;
 
   const isArticleOwner =
@@ -303,11 +331,31 @@ export default function ArticlePage() {
                   />
                 </Tooltip>
 
-                <Tooltip title="Likes">
+                <Tooltip
+                  title={
+                    !user
+                      ? "Login to like"
+                      : is_liked
+                        ? "Unlike article"
+                        : "Like article"
+                  }
+                >
                   <Chip
-                    icon={<FavoriteBorderRounded />}
+                    clickable={Boolean(user)}
+                    disabled={isLiking}
+                    onClick={user ? handleLike : undefined}
+                    icon={
+                      is_liked ? <FavoriteRounded /> : <FavoriteBorderRounded />
+                    }
                     label={formatNumber(likes)}
-                    variant="outlined"
+                    variant={is_liked ? "filled" : "outlined"}
+                    sx={{
+                      cursor: user ? "pointer" : "default",
+
+                      "& .MuiChip-icon": {
+                        color: is_liked ? "error.main" : "inherit",
+                      },
+                    }}
                   />
                 </Tooltip>
 
@@ -412,7 +460,7 @@ export default function ArticlePage() {
                 <Button
                   variant="contained"
                   startIcon={<ArrowBackRounded />}
-                  onClick={() => navigate("/articles")}
+                  onClick={() => navigate("/")}
                   sx={{
                     borderRadius: 3,
                     px: 3,

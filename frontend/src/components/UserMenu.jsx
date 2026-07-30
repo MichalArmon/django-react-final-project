@@ -14,6 +14,7 @@ import { useEffect } from "react";
 
 import { useUser } from "../providers/UserProvider";
 import { getUser } from "../services/localStorageService";
+import { useNavigate } from "react-router-dom";
 
 function UserMenu({ anchorEl, handleClose }) {
   const { user, handleLogOutUser, setUser } = useUser();
@@ -23,6 +24,8 @@ function UserMenu({ anchorEl, handleClose }) {
     setUser(user);
   }, []);
   if (!user) return null;
+
+  const navigate = useNavigate();
 
   return (
     <Popover
@@ -69,6 +72,7 @@ function UserMenu({ anchorEl, handleClose }) {
         </Typography>
 
         <Button
+          onClick={() => navigate("/profile/edit")}
           variant="outlined"
           sx={{
             borderRadius: 8,
