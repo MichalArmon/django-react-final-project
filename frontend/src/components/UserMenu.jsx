@@ -43,17 +43,26 @@ function UserMenu({ anchorEl, handleClose }) {
       }}
     >
       <Stack spacing={2} alignItems="center">
-        {/* כתובת המייל מעל הכל */}
-        {/* <Typography
+        <Typography
           variant="body2"
           color="text.secondary"
           sx={{ fontWeight: 500 }}
         >
           {user.email}
-        </Typography> */}
+        </Typography>
 
-        {/* האווטאר הגדול (המזל האסטרולוגי) */}
-        <Avatar sx={{ width: 80, height: 80, bgcolor: "#f5f5f5", p: 1 }} />
+        <Avatar
+          sx={{
+            width: 80,
+            height: 80,
+            bgcolor: "primary.main",
+            fontSize: "1.25rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+          }}
+        >
+          {user?.name?.charAt(0) || "U"}
+        </Avatar>
 
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
           Hi, {user.name}!

@@ -20,7 +20,7 @@ function Navbar() {
   const navigate = useNavigate();
   const [registerIsOpen, setRegisterIsOpen] = useState(false);
   const [loginIsOpen, setLoginIsOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const toggleRegisterOpen = () => {
     setRegisterIsOpen((prev) => !prev);
@@ -30,8 +30,12 @@ function Navbar() {
     }
   };
 
-  const toggleMenuIsOpen = () => {
-    setIsMenuOpen((prev) => !prev);
+  const handleOpenUserMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorEl(null);
   };
   return (
     <AppBar
@@ -66,7 +70,7 @@ function Navbar() {
             <Box sx={{ position: "relative" }}>
               <Tooltip title="Open user menu" arrow>
                 <IconButton
-                  onClick={toggleMenuIsOpen}
+                  onClick={handleOpenUserMenu}
                   sx={{ p: 0 }}
                   aria-label="open user menu"
                 >
@@ -85,7 +89,7 @@ function Navbar() {
                 </IconButton>
               </Tooltip>
 
-              {isMenuOpen && <UserMenu />}
+              <UserMenu anchorEl={anchorEl} handleClose={handleCloseUserMenu} />
             </Box>
           </Box>
         ) : (

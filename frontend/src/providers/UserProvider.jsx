@@ -7,6 +7,7 @@ import {
   getUser,
   setAccessTokenInLocalStorage,
   setRefreshTokenInLocalStorage,
+  removeTokens,
 } from "../services/localStorageService";
 import { useNavigate } from "react-router-dom";
 import { useSnack } from "./SnackBarProvider";
@@ -69,6 +70,11 @@ export default function UserProvider({ children }) {
       }
     }
   };
+  const handleLogOutUser = () => {
+    removeTokens();
+    setUser(null);
+    navigate("/");
+  };
 
   return (
     <UserContext.Provider
@@ -77,6 +83,7 @@ export default function UserProvider({ children }) {
         handleSubmitLoginUser,
         user,
         setUser,
+        handleLogOutUser,
       }}
     >
       {children}

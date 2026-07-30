@@ -1,6 +1,6 @@
 const loginInitialUserData = {
-  email: "michal@example.com",
-  password: "!strongPasswordabc#",
+  email: "admin",
+  password: "AdminBlog#2026!",
 };
 
 export default loginInitialUserData;
