@@ -12,6 +12,8 @@ import EditArticle from "./components/articles/EditArticle";
 import UsersAdminPage from "./components/admin/UsersAdminPage";
 import EditUserForm from "./components/uath/EditUserForm";
 import EditProfileForm from "./components/uath/EditProfileForm";
+import MLInsightsPage from "./pages/src/pages/MLInsightsPage";
+import MLPlaygroundPage from "./pages/src/pages/MLPlaygroundPage";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
         <Route path="/admin/users" element={<UsersAdminPage />} />
         <Route path="/admin/users/:id/edit" element={<EditUserForm />} />
         <Route path="/profile/edit" element={<EditProfileForm />} />
+        <Route path="/ml-insights" element={<MLInsightsPage />} />
+        <Route path="/ml-playground" element={<MLPlaygroundPage />} />
       </Route>
     </Routes>
   );
