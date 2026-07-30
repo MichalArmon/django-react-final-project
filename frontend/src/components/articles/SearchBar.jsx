@@ -11,11 +11,8 @@ export default function SearchBar() {
   const [search, setSearch] = useState();
   const navigate = useNavigate("");
   const {
-    articles,
-    setArticles,
     handleGetAllArticles,
-    totalArticles,
-    setTotalArticles,
+
     handleGetFilteredArticles,
   } = useArticle([]);
   const handleSearchChange = (e) => {
