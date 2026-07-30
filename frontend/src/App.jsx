@@ -12,8 +12,9 @@ import EditArticle from "./components/articles/EditArticle";
 import UsersAdminPage from "./components/admin/UsersAdminPage";
 import EditUserForm from "./components/uath/EditUserForm";
 import EditProfileForm from "./components/uath/EditProfileForm";
-import MLInsightsPage from "./pages/src/pages/MLInsightsPage";
-import MLPlaygroundPage from "./pages/src/pages/MLPlaygroundPage";
+import MLInsightsPage from "./pages/MLInsightsPage";
+import MLPlaygroundPage from "./pages/MLPlaygroundPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/profile/edit" element={<EditProfileForm />} />
         <Route path="/ml-insights" element={<MLInsightsPage />} />
         <Route path="/ml-playground" element={<MLPlaygroundPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

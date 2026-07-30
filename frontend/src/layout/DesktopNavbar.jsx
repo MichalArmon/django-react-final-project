@@ -62,7 +62,7 @@ function DesktopNavbar() {
       sx={{
         width: "100%",
         height: 60,
-        bgcolor: "background.default",
+        bgcolor: "background.paper",
         borderBottom: "1px solid",
         borderColor: "divider",
         zIndex: 10000000,

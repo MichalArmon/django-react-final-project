@@ -26,8 +26,8 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useUser } from "../../../providers/UserProvider";
-import api from "../../../services/apiService";
+import { useUser } from "../providers/UserProvider";
+import api from "../services/apiService";
 
 const initialForm = {
   word_count: 500,

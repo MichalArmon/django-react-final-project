@@ -71,7 +71,7 @@ function MobileNavbar() {
       elevation={0}
       sx={{
         width: "100%",
-        bgcolor: "background.default",
+        bgcolor: "background.paper",
         borderBottom: "1px solid",
         borderColor: "divider",
 
@@ -118,6 +118,7 @@ function MobileNavbar() {
                     mt: 1,
                     minWidth: 220,
                     borderRadius: 2,
+                    bgcolor: "background.paper",
                   },
                 },
               }}
