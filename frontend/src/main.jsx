@@ -11,21 +11,24 @@ import ArticleProvider from "./providers/ArticleProvider.jsx";
 import CommentProvider from "./providers/CommentProvider.jsx";
 import SnackbarProvider from "./providers/SnackBarProvider.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
+import LoadingProvider from "./providers/LoadingProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <UserProvider>
-            <ArticleProvider>
-              <CommentProvider>
-                <ScrollToTop />
-                <App />
-              </CommentProvider>
-            </ArticleProvider>
-          </UserProvider>
-        </SnackbarProvider>
+        <LoadingProvider>
+          <SnackbarProvider>
+            <UserProvider>
+              <ArticleProvider>
+                <CommentProvider>
+                  <ScrollToTop />
+                  <App />
+                </CommentProvider>
+              </ArticleProvider>
+            </UserProvider>
+          </SnackbarProvider>
+        </LoadingProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,
