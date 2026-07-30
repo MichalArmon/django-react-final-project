@@ -1,4 +1,4 @@
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, AutoGraph, Psychology } from "@mui/icons-material";
 
 import {
   AppBar,
@@ -41,6 +41,14 @@ function DesktopNavbar() {
 
     if (location.pathname.startsWith("/admin/users")) {
       return "/admin/users";
+    }
+
+    if (location.pathname.startsWith("/ml-insights")) {
+      return "/ml-insights";
+    }
+
+    if (location.pathname.startsWith("/ml-playground")) {
+      return "/ml-playground";
     }
 
     return false;
@@ -122,6 +130,38 @@ function DesktopNavbar() {
                 sx={{
                   minHeight: 60,
                   fontWeight: activeTab === "/my_articles" ? 700 : 400,
+
+                  "&.Mui-selected": {
+                    color: "text.primary",
+                  },
+                }}
+              />
+
+              <Tab
+                value="/ml-insights"
+                label="ML Insights"
+                icon={<AutoGraph />}
+                iconPosition="start"
+                onClick={() => navigate("/ml-insights")}
+                sx={{
+                  minHeight: 60,
+                  fontWeight: activeTab === "/ml-insights" ? 700 : 400,
+
+                  "&.Mui-selected": {
+                    color: "text.primary",
+                  },
+                }}
+              />
+
+              <Tab
+                value="/ml-playground"
+                label="ML Playground"
+                icon={<Psychology />}
+                iconPosition="start"
+                onClick={() => navigate("/ml-playground")}
+                sx={{
+                  minHeight: 60,
+                  fontWeight: activeTab === "/ml-playground" ? 700 : 400,
 
                   "&.Mui-selected": {
                     color: "text.primary",
