@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import {
   getToken,
   getRefreshToken,
@@ -6,8 +7,10 @@ import {
   removeTokens,
 } from "./localStorageService";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/",
+  baseURL: `${API_URL}/`,
 });
 
 api.interceptors.request.use(
@@ -30,6 +33,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     const isUnauthorized = error.response?.status === 401;
+
     const wasAlreadyRetried = originalRequest?._retry;
 
     if (!isUnauthorized || wasAlreadyRetried) {
@@ -42,15 +46,13 @@ api.interceptors.response.use(
       const refreshToken = getRefreshToken();
 
       if (!refreshToken) {
+        removeTokens();
         return Promise.reject(error);
       }
 
-      const response = await axios.post(
-        "http://localhost:8000/api/users/token/refresh/",
-        {
-          refresh: refreshToken,
-        },
-      );
+      const response = await axios.post(`${API_URL}/users/token/refresh/`, {
+        refresh: refreshToken,
+      });
 
       const newAccessToken = response.data.access;
 
