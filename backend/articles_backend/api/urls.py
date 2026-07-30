@@ -41,4 +41,9 @@ urlpatterns = [
         views.CommentDetails.as_view(),
         name="comment-details",
     ),
+    path(
+        "users/<int:pk>/",
+        views.UserDetails.as_view(),
+        name="user-details",
+    ),
 ]

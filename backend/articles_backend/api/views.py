@@ -125,6 +125,24 @@ def users(request):
     )
 
 
+# 👤 User Details / Update / Delete
+class UserDetails(RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.select_related("profile").all()
+    serializer_class = UserSerializer
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [
+                IsAuthenticated(),
+                IsManager(),
+            ]
+
+        return [
+            IsAuthenticated(),
+            IsManager(),
+        ]
+
+
 # 📦 Products
 class ProductListCreate(ListCreateAPIView):
     queryset = Product.objects.all()

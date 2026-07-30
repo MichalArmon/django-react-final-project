@@ -25,7 +25,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer()
-    password = serializers.CharField(write_only=True, required=True, min_length=8)
+
+    password = serializers.CharField(
+        write_only=True,
+        required=False,
+        min_length=8,
+    )
 
     class Meta:
         model = User
@@ -63,6 +68,67 @@ class UserSerializer(serializers.ModelSerializer):
             user.groups.add(regular_users_group)
 
         return user
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop("profile", {})
+        password = validated_data.pop("password", None)
+
+        with transaction.atomic():
+            instance.username = validated_data.get(
+                "username",
+                instance.username,
+            )
+
+            instance.email = validated_data.get(
+                "email",
+                instance.email,
+            )
+
+            instance.first_name = validated_data.get(
+                "first_name",
+                instance.first_name,
+            )
+
+            instance.last_name = validated_data.get(
+                "last_name",
+                instance.last_name,
+            )
+
+            if password:
+                instance.set_password(password)
+
+            instance.save()
+
+            profile = instance.profile
+
+            profile.bio = profile_data.get(
+                "bio",
+                profile.bio,
+            )
+
+            profile.city = profile_data.get(
+                "city",
+                profile.city,
+            )
+
+            profile.age = profile_data.get(
+                "age",
+                profile.age,
+            )
+
+            profile.experience_years = profile_data.get(
+                "experience_years",
+                profile.experience_years,
+            )
+
+            profile.role = profile_data.get(
+                "role",
+                profile.role,
+            )
+
+            profile.save()
+
+        return instance
 
 
 class TagSerializer(serializers.ModelSerializer):
