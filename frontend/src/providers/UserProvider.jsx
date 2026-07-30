@@ -125,6 +125,20 @@ export default function UserProvider({ children }) {
     }
   };
 
+  // ✔️✔️✔️ GET ALL USERS ✔️✔️✔️
+  const handleGetAllUsers = async () => {
+    try {
+      const response = await apiService.get("/users/");
+
+      return response.data;
+    } catch (error) {
+      console.log("Get users error:", error.response?.data || error.message);
+
+      setSnack("error", "The users could not be loaded");
+      throw error;
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -135,6 +149,7 @@ export default function UserProvider({ children }) {
         user,
         setUser,
         handleLogOutUser,
+        handleGetAllUsers,
       }}
     >
       {children}

@@ -66,6 +66,9 @@ function Navbar() {
                 label="My articles"
                 onClick={() => navigate("/my_articles")}
               />
+              {user.role === "admin" ? (
+                <Tab label="users" onClick={() => navigate("/admin/users")} />
+              ) : null}
             </Tabs>
             <Box sx={{ position: "relative" }}>
               <Tooltip title="Open user menu" arrow>
