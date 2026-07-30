@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import axios from "axios";
+
 import userToServer from "../normalization/userForServer";
 import loginUserToServer from "../normalization/loginForServer";
 
@@ -18,7 +18,6 @@ const UserContext = createContext();
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(() => getUser());
 
-  const URL = "http://localhost:8000/api";
   const navigate = useNavigate("");
   const { setSnack } = useSnack();
 
@@ -28,7 +27,7 @@ export default function UserProvider({ children }) {
     const userDetailsForServer = userToServer(data);
 
     try {
-      const response = await axios.post(`${URL}/users/`, userDetailsForServer);
+      const response = await api.post("/users/", userDetailsForServer);
       console.log(response);
       data = {
         email: userDetailsForServer.email,
@@ -49,8 +48,8 @@ export default function UserProvider({ children }) {
     const loginUserDetailsForServer = loginUserToServer(data);
     console.log("loginUserDetailsForServer:", loginUserDetailsForServer);
     try {
-      const response = await axios.post(
-        `${URL}/users/login/`,
+      const response = await api.post(
+        "/users/login/",
         loginUserDetailsForServer,
       );
       const accessToken = response.data.access;
