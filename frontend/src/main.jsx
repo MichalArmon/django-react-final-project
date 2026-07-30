@@ -10,7 +10,8 @@ import UserProvider from "./providers/UserProvider.jsx";
 import ArticleProvider from "./providers/ArticleProvider.jsx";
 import CommentProvider from "./providers/CommentProvider.jsx";
 import SnackbarProvider from "./providers/SnackBarProvider.jsx";
-BrowserRouter;
+import ScrollToTop from "./components/ScrollToTop.jsx";
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -19,6 +20,7 @@ createRoot(document.getElementById("root")).render(
           <UserProvider>
             <ArticleProvider>
               <CommentProvider>
+                <ScrollToTop />
                 <App />
               </CommentProvider>
             </ArticleProvider>
