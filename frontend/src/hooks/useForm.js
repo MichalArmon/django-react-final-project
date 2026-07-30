@@ -23,5 +23,5 @@ export default function useForm(initialValues, schema, onSubmit) {
     }));
   };
 
-  return { handleChange, handleSubmit, errors, formDetails };
+  return { handleChange, handleSubmit, errors, formDetails, setFormDetails };
 }

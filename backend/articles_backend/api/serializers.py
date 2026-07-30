@@ -1,7 +1,7 @@
-from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth.models import Group, User
 
 from .models import Article, Tag, Comment, UserProfile, Product
 
@@ -46,9 +46,21 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.pop("password")
 
         with transaction.atomic():
-            user = User.objects.create_user(password=password, **validated_data)
+            user = User.objects.create_user(
+                password=password,
+                **validated_data,
+            )
 
-            UserProfile.objects.create(user=user, **profile_data)
+            UserProfile.objects.create(
+                user=user,
+                **profile_data,
+            )
+
+            regular_users_group, created = Group.objects.get_or_create(
+                name="Regular Users"
+            )
+
+            user.groups.add(regular_users_group)
 
         return user
 

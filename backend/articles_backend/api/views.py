@@ -1,24 +1,34 @@
 from pathlib import Path
-from rest_framework.response import Response
 
 import joblib
 import pandas as pd
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
-    IsAdminUser,
 )
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from rest_framework_simplejwt.views import TokenObtainPairView
+
+from .models import Article, Product, Comment
+from .permissions import (
+    IsManager,
+    IsCommentOwnerOrAdmin,
+)
 from .serializers import (
     UserSerializer,
     ArticleSerializer,
@@ -26,11 +36,6 @@ from .serializers import (
     CustomTokenObtainPairSerializer,
     CommentSerializer,
 )
-from django.contrib.auth.models import User
-from .models import Article, Product, Comment
-from .permissions import IsArticleOwnerOrAdmin, IsCommentOwnerOrAdmin
-from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
 
 # הנתיב לתיקייה שבה נמצאים קובצי המודל
 MODELS_DIR = Path(__file__).resolve().parent / "ml_models"
@@ -42,38 +47,35 @@ model = joblib.load(MODELS_DIR / "article_views_model.pkl")
 feature_columns = joblib.load(MODELS_DIR / "article_views_features.pkl")
 
 
+# 🔐 JWT Login
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
+# 🤖 ML Prediction
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def predict_views(request):
     try:
-        # קבלת הנתונים שנשלחו ב-JSON
         word_count = request.data["word_count"]
         is_breaking_news = request.data["is_breaking_news"]
         author_experience_years = request.data["author_experience_years"]
 
-        # המרת True/False ל-1/0
         is_breaking_news = int(is_breaking_news)
 
-        # בניית שורה אחת באותו מבנה שבו המודל אומן
         article_data = pd.DataFrame(
             [
                 {
                     "word_count": word_count,
                     "is_breaking_news": is_breaking_news,
-                    "author_experience_years": author_experience_years,
+                    "author_experience_years": (author_experience_years),
                 }
             ],
             columns=feature_columns,
         )
 
-        # ביצוע החיזוי
         prediction = model.predict(article_data)[0]
 
-        # לא הגיוני להחזיר מספר צפיות שלילי
         predicted_views = max(0, round(prediction))
 
         return Response(
@@ -83,52 +85,72 @@ def predict_views(request):
 
     except KeyError as error:
         return Response(
-            {"error": f"Missing field: {error.args[0]}"},
+            {"error": (f"Missing field: {error.args[0]}")},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     except (TypeError, ValueError):
         return Response(
-            {"error": "All input fields must contain valid values."},
+            {"error": ("All input fields must contain " "valid values.")},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
 
+# 👤 Users / Register
 @api_view(["GET", "POST"])
 def users(request):
     if request.method == "GET":
         users_queryset = User.objects.select_related("profile").all()
 
-        serializer = UserSerializer(users_queryset, many=True)
+        serializer = UserSerializer(
+            users_queryset,
+            many=True,
+        )
 
         return Response(serializer.data)
 
-    if request.method == "POST":
-        serializer = UserSerializer(data=request.data)
+    serializer = UserSerializer(data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()
+    if serializer.is_valid():
+        serializer.save()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(
+        serializer.errors,
+        status=status.HTTP_400_BAD_REQUEST,
+    )
 
 
+# 📦 Products
 class ProductListCreate(ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
     filter_backends = [
         DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
     ]
+
     filterset_fields = [
         "category",
         "price",
         "quantity",
     ]
-    search_fields = ["name", "category"]
-    ordering_fields = ["price", "quantity"]
+
+    search_fields = [
+        "name",
+        "category",
+    ]
+
+    ordering_fields = [
+        "price",
+        "quantity",
+    ]
 
 
 class ProductDetails(RetrieveUpdateDestroyAPIView):
@@ -136,16 +158,10 @@ class ProductDetails(RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
 
 
-# ❤️❤️❤️ArticlesListCreate❤️❤️❤️
+# 📰 Articles List / Create
 class ArticlesListCreate(ListCreateAPIView):
-    queryset = Article.objects.all()
+    queryset = Article.objects.all().order_by("-published_at")
     serializer_class = ArticleSerializer
-
-    def get_permissions(self):
-        if self.request.method == "GET":
-            return [AllowAny()]
-
-        return [IsAuthenticated()]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -153,7 +169,11 @@ class ArticlesListCreate(ListCreateAPIView):
         OrderingFilter,
     ]
 
-    filterset_fields = ["tags", "author__username", "author"]
+    filterset_fields = [
+        "tags",
+        "author__username",
+        "author",
+    ]
 
     search_fields = [
         "title",
@@ -169,49 +189,59 @@ class ArticlesListCreate(ListCreateAPIView):
         "published_at",
     ]
 
-    ordering = ["likes"]
+    ordering = ["-published_at"]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        # רק מנהל יכול ליצור כתבה
+        return [
+            IsAuthenticated(),
+            IsManager(),
+        ]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
-# ❤️ArticleDetails❤️
+# 📰 Article Details / Update / Delete
 class ArticleDetails(RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
     def get_permissions(self):
-
         if self.request.method == "GET":
             return [AllowAny()]
 
-        if self.request.method in ["PUT", "PATCH"]:
-            return [
-                IsAuthenticated(),
-                IsArticleOwnerOrAdmin(),
-            ]
-
-        if self.request.method == "DELETE":
-            return [
-                IsAuthenticated(),
-                IsAdminUser(),
-            ]
-
-        return [IsAuthenticated()]
+        # לפי מסמך הדרישות:
+        # רק מנהל יכול לערוך ולמחוק כתבות
+        return [
+            IsAuthenticated(),
+            IsManager(),
+        ]
 
 
-# 👍👍👍Like👍👍👍
+# 👍 Article Like Toggle
 class ArticleLikeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, pk):
-        article = get_object_or_404(Article, pk=pk)
+        article = get_object_or_404(
+            Article,
+            pk=pk,
+        )
+
         user = request.user
 
         if article.liked_by.filter(pk=user.pk).exists():
             article.liked_by.remove(user)
-            article.likes = max(0, article.likes - 1)
+            article.likes = max(
+                0,
+                article.likes - 1,
+            )
             liked = False
+
         else:
             article.liked_by.add(user)
             article.likes += 1
@@ -224,13 +254,14 @@ class ArticleLikeView(APIView):
                 "id": article.id,
                 "liked": liked,
                 "likes": article.likes,
-            }
+            },
+            status=status.HTTP_200_OK,
         )
 
 
-# 🗨️🗨️🗨️CommentListCreate💬💬💬
+# 💬 Comments List / Create
 class CommentListCreate(ListCreateAPIView):
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by("created_at")
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -244,11 +275,17 @@ class CommentListCreate(ListCreateAPIView):
         "article",
     ]
 
+    ordering_fields = [
+        "created_at",
+    ]
+
+    ordering = ["created_at"]
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
 
-# 🗨️CommentDetails💬
+# 💬 Comment Details / Update / Delete
 class CommentDetails(RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
