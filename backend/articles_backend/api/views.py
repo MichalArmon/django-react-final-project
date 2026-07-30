@@ -13,7 +13,11 @@ from rest_framework.generics import (
 )
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+    IsAdminUser,
+)
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (
     UserSerializer,
@@ -24,7 +28,7 @@ from .serializers import (
 )
 from django.contrib.auth.models import User
 from .models import Article, Product, Comment
-from .permissions import IsArticleOwner
+from .permissions import IsArticleOwnerOrAdmin, IsCommentOwnerOrAdmin
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 
@@ -132,6 +136,7 @@ class ProductDetails(RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
 
 
+# ❤️❤️❤️ArticlesListCreate❤️❤️❤️
 class ArticlesListCreate(ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
@@ -170,17 +175,32 @@ class ArticlesListCreate(ListCreateAPIView):
         serializer.save(author=self.request.user)
 
 
+# ❤️ArticleDetails❤️
 class ArticleDetails(RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
     def get_permissions(self):
+
         if self.request.method == "GET":
             return [AllowAny()]
 
-        return [IsAuthenticated(), IsArticleOwner()]
+        if self.request.method in ["PUT", "PATCH"]:
+            return [
+                IsAuthenticated(),
+                IsArticleOwnerOrAdmin(),
+            ]
+
+        if self.request.method == "DELETE":
+            return [
+                IsAuthenticated(),
+                IsAdminUser(),
+            ]
+
+        return [IsAuthenticated()]
 
 
+# 👍👍👍Like👍👍👍
 class ArticleLikeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -208,6 +228,7 @@ class ArticleLikeView(APIView):
         )
 
 
+# 🗨️🗨️🗨️CommentListCreate💬💬💬
 class CommentListCreate(ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -227,6 +248,7 @@ class CommentListCreate(ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
+# 🗨️CommentDetails💬
 class CommentDetails(RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
