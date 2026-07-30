@@ -53,7 +53,14 @@ function UsersAdminPage() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
+      <Typography
+        variant="h3"
+        sx={{
+          fontWeight: 700,
+          mb: 1,
+          color: "text.primary",
+        }}
+      >
         Users Management
       </Typography>
 
