@@ -172,10 +172,10 @@ function DesktopNavbar() {
             </Box>
           </Box>
         ) : (
-          <Tooltip title="REGISTER" arrow placement="bottom">
+          <Tooltip title="Login" arrow placement="bottom">
             <IconButton
-              aria-label="Register"
-              onClick={() => navigate("/register")}
+              aria-label="Login"
+              onClick={() => navigate("/login")}
               sx={{
                 width: 40,
                 height: 40,

@@ -24,7 +24,7 @@ function SignAndLogButton() {
             color: "primary.main",
           }}
         >
-          {isLoginPage ? "Register here" : "Sign in"}
+          {isLoginPage ? "Register here" : "Login"}
         </Link>
       </Typography>
     </Box>
