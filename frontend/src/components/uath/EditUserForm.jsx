@@ -23,8 +23,14 @@ function EditUserForm() {
     }
   };
 
-  const { handleChange, handleSubmit, errors, formDetails, setFormDetails } =
-    useForm(initialEditUserData, EditUser, submitEditUser);
+  const {
+    handleChange,
+    handleSubmit,
+    errors,
+    formDetails,
+    setFormDetails,
+    handleReset,
+  } = useForm(initialEditUserData, EditUser, submitEditUser);
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -51,7 +57,7 @@ function EditUserForm() {
   }, [id]);
 
   return (
-    <Form onSubmit={handleSubmit} title="Edit User">
+    <Form onSubmit={handleSubmit} title="Edit User" onReset={handleReset}>
       <Grid item xs={12} md={6}>
         <TextField
           label="Username"
@@ -170,12 +176,6 @@ function EditUserForm() {
 
           <MenuItem value="manager">Manager</MenuItem>
         </TextField>
-      </Grid>
-
-      <Grid item xs={12}>
-        <Button type="submit" variant="contained" fullWidth>
-          Update User
-        </Button>
       </Grid>
     </Form>
   );

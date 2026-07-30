@@ -7,17 +7,21 @@ import {
   Avatar,
   Tabs,
   Tab,
+  Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { useUser } from "../providers/UserProvider";
 import SearchBar from "../components/articles/SearchBar";
-
 import { useState } from "react";
 import UserMenu from "../components/UserMenu";
 
 function Navbar() {
   const { user } = useUser();
+
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [registerIsOpen, setRegisterIsOpen] = useState(false);
   const [loginIsOpen, setLoginIsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -25,8 +29,11 @@ function Navbar() {
   const toggleRegisterOpen = () => {
     setRegisterIsOpen((prev) => !prev);
     setLoginIsOpen((prev) => !prev);
-    {
-      registerIsOpen || loginIsOpen ? navigate("/register") : navigate("/");
+
+    if (registerIsOpen || loginIsOpen) {
+      navigate("/register");
+    } else {
+      navigate("/");
     }
   };
 
@@ -37,6 +44,21 @@ function Navbar() {
   const handleCloseUserMenu = () => {
     setAnchorEl(null);
   };
+
+  const getActiveTab = () => {
+    if (location.pathname.startsWith("/my_articles")) {
+      return "/my_articles";
+    }
+
+    if (location.pathname.startsWith("/admin/users")) {
+      return "/admin/users";
+    }
+
+    return false;
+  };
+
+  const activeTab = getActiveTab();
+
   return (
     <AppBar
       elevation={0}
@@ -55,21 +77,96 @@ function Navbar() {
           alignItems: "center",
           px: 2,
           justifyContent: "space-between",
+          position: "relative",
         }}
       >
         <SearchBar />
 
+        <Typography
+          component="button"
+          onClick={() => navigate("/")}
+          sx={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            border: "none",
+            backgroundColor: "transparent",
+            cursor: "pointer",
+            color: "primary.main",
+            fontSize: {
+              xs: "1rem",
+              md: "1.35rem",
+            },
+            fontWeight: 800,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            p: 0,
+
+            "&:hover": {
+              opacity: 0.75,
+            },
+          }}
+        >
+          Article Hub
+        </Typography>
+
         {user ? (
-          <Box sx={{ justifyContent: "space-around", display: "flex" }}>
-            <Tabs sx={{ p: 0, m: 0 }} value={0}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <Tabs
+              value={activeTab}
+              sx={{
+                minHeight: 60,
+
+                "& .MuiTabs-indicator": {
+                  display: "none",
+                },
+              }}
+            >
               <Tab
+                value="/my_articles"
                 label="My articles"
                 onClick={() => navigate("/my_articles")}
+                sx={{
+                  minHeight: 60,
+                  fontWeight: activeTab === "/my_articles" ? 700 : 400,
+                  color:
+                    activeTab === "/my_articles"
+                      ? "text.primary"
+                      : "text.secondary",
+
+                  "&.Mui-selected": {
+                    color: "text.primary",
+                  },
+                }}
               />
-              {user.role === "admin" ? (
-                <Tab label="users" onClick={() => navigate("/admin/users")} />
-              ) : null}
+
+              {user.role === "admin" && (
+                <Tab
+                  value="/admin/users"
+                  label="Users"
+                  onClick={() => navigate("/admin/users")}
+                  sx={{
+                    minHeight: 60,
+                    fontWeight: activeTab === "/admin/users" ? 700 : 400,
+                    color:
+                      activeTab === "/admin/users"
+                        ? "text.primary"
+                        : "text.secondary",
+
+                    "&.Mui-selected": {
+                      color: "text.primary",
+                    },
+                  }}
+                />
+              )}
             </Tabs>
+
             <Box sx={{ position: "relative" }}>
               <Tooltip title="Open user menu" arrow>
                 <IconButton
@@ -104,6 +201,7 @@ function Navbar() {
                 width: 40,
                 height: 40,
                 p: 0,
+
                 "&:hover": {
                   backgroundColor: "transparent",
                 },

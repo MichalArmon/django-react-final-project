@@ -11,14 +11,11 @@ import { articleSchema } from "../../models/Article";
 import { useArticle } from "../../providers/ArticleProvider";
 
 function ArticleForm({ handleSubmitArticle, initialDataArticle, title }) {
-  const { handleChange, handleSubmit, errors, formDetails } = useForm(
-    initialDataArticle,
-    articleSchema,
-    handleSubmitArticle,
-  );
+  const { handleChange, handleSubmit, errors, formDetails, handleReset } =
+    useForm(initialDataArticle, articleSchema, handleSubmitArticle);
   return (
     <>
-      <Form onSubmit={handleSubmit} title={title}>
+      <Form onSubmit={handleSubmit} title={title} onReset={handleReset}>
         <Grid item xs={12} md={12}>
           <TextField
             label="Title"

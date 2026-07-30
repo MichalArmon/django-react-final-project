@@ -128,7 +128,7 @@ export default function UserProvider({ children }) {
   // ✔️✔️✔️ GET ALL USERS ✔️✔️✔️
   const handleGetAllUsers = async () => {
     try {
-      const response = await apiService.get("/users/");
+      const response = await api.get("/users/");
 
       return response.data;
     } catch (error) {

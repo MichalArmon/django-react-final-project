@@ -10,14 +10,11 @@ import SignAndLogButton from "./SignAndLogButton";
 
 function LoginForm() {
   const { handleSubmitLoginUser } = useUser();
-  const { handleChange, handleSubmit, errors, formDetails } = useForm(
-    loginInitialUserData,
-    Login,
-    handleSubmitLoginUser,
-  );
+  const { handleChange, handleSubmit, errors, formDetails, handleReset } =
+    useForm(loginInitialUserData, Login, handleSubmitLoginUser);
   return (
     <>
-      <Form onSubmit={handleSubmit} title="Login">
+      <Form onSubmit={handleSubmit} title="Login" onReset={handleReset}>
         <Grid item xs={12}>
           <TextField
             label="Email"

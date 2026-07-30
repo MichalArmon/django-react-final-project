@@ -23,5 +23,23 @@ export default function useForm(initialValues, schema, onSubmit) {
     }));
   };
 
-  return { handleChange, handleSubmit, errors, formDetails, setFormDetails };
+  const handleReset = () => {
+    setFormDetails(
+      Object.keys(formDetails).reduce((emptyForm, fieldName) => {
+        emptyForm[fieldName] = "";
+        return emptyForm;
+      }, {}),
+    );
+
+    setErrors({});
+  };
+
+  return {
+    handleChange,
+    handleSubmit,
+    errors,
+    formDetails,
+    handleReset,
+    setFormDetails,
+  };
 }
