@@ -140,4 +140,5 @@ SIMPLE_JWT = {
 }
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://article-hub-qa2w.onrender.com",
 ]
