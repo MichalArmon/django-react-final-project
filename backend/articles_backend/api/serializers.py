@@ -18,6 +18,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(read_only=True)
+
     class Meta:
         model = UserProfile
         fields = "bio", "city", "age", "experience_years", "role"
@@ -124,6 +126,73 @@ class UserSerializer(serializers.ModelSerializer):
             profile.role = profile_data.get(
                 "role",
                 profile.role,
+            )
+
+            profile.save()
+
+        return instance
+
+
+class UserSelfUpdateSerializer(serializers.ModelSerializer):
+    profile = UserSelfProfileSerializer()
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "profile",
+        )
+
+        read_only_fields = (
+            "id",
+            "username",
+        )
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop("profile", {})
+
+        with transaction.atomic():
+            instance.email = validated_data.get(
+                "email",
+                instance.email,
+            )
+
+            instance.first_name = validated_data.get(
+                "first_name",
+                instance.first_name,
+            )
+
+            instance.last_name = validated_data.get(
+                "last_name",
+                instance.last_name,
+            )
+
+            instance.save()
+
+            profile = instance.profile
+
+            profile.bio = profile_data.get(
+                "bio",
+                profile.bio,
+            )
+
+            profile.city = profile_data.get(
+                "city",
+                profile.city,
+            )
+
+            profile.age = profile_data.get(
+                "age",
+                profile.age,
+            )
+
+            profile.experience_years = profile_data.get(
+                "experience_years",
+                profile.experience_years,
             )
 
             profile.save()

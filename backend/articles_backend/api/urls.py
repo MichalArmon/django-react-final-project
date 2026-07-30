@@ -46,4 +46,9 @@ urlpatterns = [
         views.UserDetails.as_view(),
         name="user-details",
     ),
+    path(
+        "users/me/",
+        views.CurrentUserDetails.as_view(),
+        name="current-user-details",
+    ),
 ]

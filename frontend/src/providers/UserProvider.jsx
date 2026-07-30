@@ -138,10 +138,58 @@ export default function UserProvider({ children }) {
       throw error;
     }
   };
+  // ✔️✔️✔️ GET MY PROFILE ✔️✔️✔️
+  const handleGetMyProfile = async () => {
+    try {
+      const response = await api.get("/users/me/");
+
+      return response.data;
+    } catch (error) {
+      console.log(
+        "Get my profile error:",
+        error.response?.data || error.message,
+      );
+
+      setSnack("error", "The profile could not be loaded");
+      throw error;
+    }
+  };
+  // ✔️✔️✔️ EDIT MY PROFILE ✔️✔️✔️
+  const handleEditMyProfile = async (data) => {
+    const profileForServer = {
+      email: data.email,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      profile: {
+        bio: data.bio,
+        city: data.city,
+        age: Number(data.age),
+        experience_years: Number(data.experience_years),
+      },
+    };
+
+    try {
+      const response = await api.patch("/users/me/", profileForServer);
+
+      setSnack("success", "Profile updated successfully");
+
+      return response.data;
+    } catch (error) {
+      console.log(
+        "Edit my profile error:",
+        error.response?.data || error.message,
+      );
+
+      setSnack("error", "The profile could not be updated");
+      throw error;
+    }
+  };
 
   return (
     <UserContext.Provider
       value={{
+        handleEditMyProfile,
+        handleGetMyProfile,
         handleGetOneUser,
         handleEditUser,
         handleSubmitCreateUser,

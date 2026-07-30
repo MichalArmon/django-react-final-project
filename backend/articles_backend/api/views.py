@@ -13,6 +13,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import (
     ListCreateAPIView,
+    RetrieveUpdateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.permissions import (
@@ -35,6 +36,7 @@ from .serializers import (
     ProductSerializer,
     CustomTokenObtainPairSerializer,
     CommentSerializer,
+    UserSelfUpdateSerializer,
 )
 
 # הנתיב לתיקייה שבה נמצאים קובצי המודל
@@ -141,6 +143,15 @@ class UserDetails(RetrieveUpdateDestroyAPIView):
             IsAuthenticated(),
             IsManager(),
         ]
+
+
+# 👤 Current User Profile
+class CurrentUserDetails(RetrieveUpdateAPIView):
+    serializer_class = UserSelfUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 
 # 📦 Products
