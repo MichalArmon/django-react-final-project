@@ -252,3 +252,12 @@ class CommentListCreate(ListCreateAPIView):
 class CommentDetails(RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [
+            IsAuthenticated(),
+            IsCommentOwnerOrAdmin(),
+        ]

@@ -67,6 +67,25 @@ export default function CommentProvider({ children }) {
       throw error;
     }
   }
+  // ✔️✔️✔️ Delete ✔️✔️✔️
+  async function handleDeleteComment(commentId) {
+    try {
+      await api.delete(`comments/${commentId}/`);
+
+      setCurrentComments((prev) =>
+        prev.filter((comment) => comment.id !== Number(commentId)),
+      );
+
+      return commentId;
+    } catch (error) {
+      console.error(
+        "Delete comment failed:",
+        error.response?.data || error.message,
+      );
+
+      throw error;
+    }
+  }
 
   return (
     <CommentContext.Provider
@@ -79,6 +98,7 @@ export default function CommentProvider({ children }) {
         currentComments,
         setCurrentComments,
         handleGetByArticle,
+        handleDeleteComment,
       }}
     >
       {children}

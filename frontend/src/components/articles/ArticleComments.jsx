@@ -1,20 +1,18 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-
 import {
   Avatar,
   Box,
-  Button,
-  CircularProgress,
   Collapse,
   Divider,
+  IconButton,
   Stack,
-  TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
-import { SendToMobileRounded } from "@mui/icons-material";
+import { DeleteOutlineRounded } from "@mui/icons-material";
+
 import { useComment } from "../../providers/CommentProvider";
+import { useUser } from "../../providers/UserProvider";
 import CreateComment from "../comments/CreateComment";
 
 function formatDate(dateString) {
@@ -34,7 +32,28 @@ function ArticleComments({
   setShowComments,
   onCommentCreated,
 }) {
-  const { handleAddComment, isSending } = useComment();
+  const { handleDeleteComment } = useComment();
+  const { user } = useUser();
+
+  const isAdmin =
+    user?.is_staff === true ||
+    user?.is_superuser === true ||
+    user?.role === "admin";
+
+  const handleDelete = async (commentId) => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this comment?",
+    );
+
+    if (!isConfirmed) return;
+
+    try {
+      await handleDeleteComment(commentId);
+    } catch (error) {
+      console.error("Delete comment failed:", error);
+    }
+  };
+
   return (
     <Collapse in={showComments} unmountOnExit>
       <Divider />
@@ -53,74 +72,103 @@ function ArticleComments({
           </Typography>
         ) : (
           <Stack spacing={1.7} sx={{ mb: 2 }}>
-            {comments.map((comment) => (
-              <Stack
-                key={comment.id}
-                direction="row"
-                spacing={1}
-                alignItems="flex-start"
-              >
-                <Avatar
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    fontSize: 13,
-                    bgcolor: "primary.main",
-                    flexShrink: 0,
-                  }}
-                >
-                  {comment.username?.charAt(0)?.toUpperCase() || "U"}
-                </Avatar>
+            {comments.map((comment) => {
+              const isCommentOwner =
+                Number(comment.user) === Number(user?.user_id);
 
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Box
+              const canDeleteComment = isCommentOwner || isAdmin;
+
+              return (
+                <Stack
+                  key={comment.id}
+                  direction="row"
+                  spacing={1}
+                  alignItems="flex-start"
+                >
+                  <Avatar
                     sx={{
-                      width: "fit-content",
-                      maxWidth: "100%",
-                      px: 1.5,
-                      py: 1,
-                      borderRadius: 3,
-                      backgroundColor: "background.paper",
+                      width: 32,
+                      height: 32,
+                      fontSize: 13,
+                      bgcolor: "primary.main",
+                      flexShrink: 0,
                     }}
                   >
-                    <Typography
-                      variant="caption"
+                    {comment.username?.charAt(0)?.toUpperCase() || "U"}
+                  </Avatar>
+
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box
                       sx={{
-                        display: "block",
-                        fontWeight: 700,
+                        width: "fit-content",
+                        maxWidth: "100%",
+                        px: 1.5,
+                        py: 1,
+                        borderRadius: 3,
+                        backgroundColor: "background.paper",
                       }}
                     >
-                      {comment.username || "Unknown user"}
-                    </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          display: "block",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {comment.username || "Unknown user"}
+                      </Typography>
 
-                    <Typography
-                      variant="body2"
-                      sx={{ overflowWrap: "anywhere" }}
-                    >
-                      {comment.content}
-                    </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          overflowWrap: "anywhere",
+                        }}
+                      >
+                        {comment.content}
+                      </Typography>
+                    </Box>
+
+                    {comment.created_at && (
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          display: "block",
+                          mt: 0.4,
+                          ml: 1,
+                        }}
+                      >
+                        {formatDate(comment.created_at)}
+                      </Typography>
+                    )}
                   </Box>
 
-                  {comment.created_at && (
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{
-                        display: "block",
-                        mt: 0.4,
-                        ml: 1,
-                      }}
-                    >
-                      {formatDate(comment.created_at)}
-                    </Typography>
+                  {canDeleteComment && (
+                    <Tooltip title="Delete comment">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDelete(comment.id)}
+                        aria-label="delete comment"
+                        sx={{
+                          color: "text.secondary",
+                          "&:hover": {
+                            color: "error.main",
+                            backgroundColor: "rgba(211, 47, 47, 0.08)",
+                          },
+                        }}
+                      >
+                        <DeleteOutlineRounded fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   )}
-                </Box>
-              </Stack>
-            ))}
+                </Stack>
+              );
+            })}
           </Stack>
         )}
 
         <Divider sx={{ mb: 2 }} />
+
         <CreateComment
           setShowComments={setShowComments}
           showComments={showComments}
