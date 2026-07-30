@@ -1,5 +1,194 @@
 [
 {
+  "model": "auth.group",
+  "fields": {
+    "name": "Regular Users",
+    "permissions": [
+      [
+        "view_article",
+        "api",
+        "article"
+      ],
+      [
+        "add_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "view_comment",
+        "api",
+        "comment"
+      ]
+    ]
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Editors",
+    "permissions": [
+      [
+        "add_article",
+        "api",
+        "article"
+      ],
+      [
+        "change_article",
+        "api",
+        "article"
+      ],
+      [
+        "view_article",
+        "api",
+        "article"
+      ],
+      [
+        "add_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "change_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "delete_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "view_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "add_tag",
+        "api",
+        "tag"
+      ],
+      [
+        "change_tag",
+        "api",
+        "tag"
+      ],
+      [
+        "view_tag",
+        "api",
+        "tag"
+      ]
+    ]
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Managers",
+    "permissions": [
+      [
+        "add_article",
+        "api",
+        "article"
+      ],
+      [
+        "change_article",
+        "api",
+        "article"
+      ],
+      [
+        "delete_article",
+        "api",
+        "article"
+      ],
+      [
+        "view_article",
+        "api",
+        "article"
+      ],
+      [
+        "add_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "change_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "delete_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "view_comment",
+        "api",
+        "comment"
+      ],
+      [
+        "add_product",
+        "api",
+        "product"
+      ],
+      [
+        "change_product",
+        "api",
+        "product"
+      ],
+      [
+        "delete_product",
+        "api",
+        "product"
+      ],
+      [
+        "view_product",
+        "api",
+        "product"
+      ],
+      [
+        "add_tag",
+        "api",
+        "tag"
+      ],
+      [
+        "change_tag",
+        "api",
+        "tag"
+      ],
+      [
+        "delete_tag",
+        "api",
+        "tag"
+      ],
+      [
+        "view_tag",
+        "api",
+        "tag"
+      ],
+      [
+        "add_userprofile",
+        "api",
+        "userprofile"
+      ],
+      [
+        "change_userprofile",
+        "api",
+        "userprofile"
+      ],
+      [
+        "delete_userprofile",
+        "api",
+        "userprofile"
+      ],
+      [
+        "view_userprofile",
+        "api",
+        "userprofile"
+      ]
+    ]
+  }
+},
+{
   "model": "auth.user",
   "fields": {
     "password": "pbkdf2_sha256$1200000$QvExqfGlXd4f8RklYU997u$Hc1FguNLd/R6y0aZLL7fzsliDRg6klmsEG0Pn1azQZI=",
@@ -365,7 +554,7 @@
       "admin"
     ],
     "bio": "",
-    "city": "øîú âï",
+    "city": "×¨×ž×ª ×’×Ÿ",
     "age": 0,
     "experience_years": 10,
     "role": "admin"
@@ -21451,7 +21640,7 @@
   "model": "api.article",
   "pk": 1001,
   "fields": {
-    "title": "New Government Plan Announcedùùùù",
+    "title": "New Government Plan Announced×©×©×©×©",
     "content": "Researchers continue to examine the possible effects of this development. More information is expected to become available in the coming months.",
     "author": [
       "admin"
