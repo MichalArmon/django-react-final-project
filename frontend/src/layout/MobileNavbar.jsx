@@ -1,14 +1,24 @@
-import { AccountCircle, MenuRounded } from "@mui/icons-material";
+import {
+  AccountCircle,
+  AdminPanelSettingsOutlined,
+  ArticleOutlined,
+  AutoGraph,
+  MenuRounded,
+  Psychology,
+} from "@mui/icons-material";
+
 import {
   AppBar,
   Avatar,
   Box,
   IconButton,
+  ListItemIcon,
   Menu,
   MenuItem,
   Tooltip,
   Typography,
 } from "@mui/material";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -23,7 +33,6 @@ function MobileNavbar() {
   const location = useLocation();
 
   const [navigationAnchor, setNavigationAnchor] = useState(null);
-
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
 
   const navigationMenuIsOpen = Boolean(navigationAnchor);
@@ -53,6 +62,10 @@ function MobileNavbar() {
 
   const isUsersPage = location.pathname.startsWith("/admin/users");
 
+  const isMLInsightsPage = location.pathname.startsWith("/ml-insights");
+
+  const isMLPlaygroundPage = location.pathname.startsWith("/ml-playground");
+
   return (
     <AppBar
       elevation={0}
@@ -61,7 +74,10 @@ function MobileNavbar() {
         bgcolor: "background.default",
         borderBottom: "1px solid",
         borderColor: "divider",
-        zIndex: 10000000,
+
+        // חשוב:
+        // נותן ל-Menu של MUI להופיע מעל ה-Navbar
+        zIndex: (theme) => theme.zIndex.appBar,
       }}
     >
       {/* השורה העליונה */}
@@ -99,7 +115,9 @@ function MobileNavbar() {
               slotProps={{
                 paper: {
                   sx: {
-                    mt: 7,
+                    mt: 1,
+                    minWidth: 220,
+                    borderRadius: 2,
                   },
                 },
               }}
@@ -108,7 +126,30 @@ function MobileNavbar() {
                 selected={isMyArticlesPage}
                 onClick={() => handleNavigate("/my_articles")}
               >
+                <ListItemIcon>
+                  <ArticleOutlined fontSize="small" />
+                </ListItemIcon>
                 My Articles
+              </MenuItem>
+
+              <MenuItem
+                selected={isMLInsightsPage}
+                onClick={() => handleNavigate("/ml-insights")}
+              >
+                <ListItemIcon>
+                  <AutoGraph fontSize="small" />
+                </ListItemIcon>
+                ML Insights
+              </MenuItem>
+
+              <MenuItem
+                selected={isMLPlaygroundPage}
+                onClick={() => handleNavigate("/ml-playground")}
+              >
+                <ListItemIcon>
+                  <Psychology fontSize="small" />
+                </ListItemIcon>
+                ML Playground
               </MenuItem>
 
               {user.role === "admin" && (
@@ -116,6 +157,9 @@ function MobileNavbar() {
                   selected={isUsersPage}
                   onClick={() => handleNavigate("/admin/users")}
                 >
+                  <ListItemIcon>
+                    <AdminPanelSettingsOutlined fontSize="small" />
+                  </ListItemIcon>
                   Users
                 </MenuItem>
               )}
@@ -143,6 +187,10 @@ function MobileNavbar() {
             textTransform: "uppercase",
             whiteSpace: "nowrap",
             p: 0,
+
+            "&:hover": {
+              opacity: 0.75,
+            },
           }}
         >
           Article Hub
@@ -177,10 +225,10 @@ function MobileNavbar() {
             />
           </Box>
         ) : (
-          <Tooltip title="Register" arrow>
+          <Tooltip title="Login" arrow>
             <IconButton
-              aria-label="register"
-              onClick={() => navigate("/register")}
+              aria-label="login"
+              onClick={() => navigate("/login")}
               sx={{ p: 0 }}
             >
               <AccountCircle
