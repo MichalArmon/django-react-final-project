@@ -15,6 +15,7 @@ import EditProfileForm from "./components/uath/EditProfileForm";
 import MLInsightsPage from "./pages/MLInsightsPage";
 import MLPlaygroundPage from "./pages/MLPlaygroundPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ManagerRoute from "./routes/ManagerRoute";
 
 function App() {
   return (
@@ -24,7 +25,23 @@ function App() {
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/my_articles" element={<MyArticlesPage />} />
-        <Route path="/my_articles/create" element={<CreateArticle />} />
+        <Route
+          path="/my_articles/create"
+          element={
+            <ManagerRoute>
+              <CreateArticle />
+            </ManagerRoute>
+          }
+        />
+
+        <Route
+          path="/articles/:articleId/edit"
+          element={
+            <ManagerRoute>
+              <EditArticle />
+            </ManagerRoute>
+          }
+        />
         <Route path="/articles/:articleId" element={<ArticlePage />} />
         <Route path="/articles/:articleId/edit" element={<EditArticle />} />
         <Route path="/admin/users" element={<UsersAdminPage />} />

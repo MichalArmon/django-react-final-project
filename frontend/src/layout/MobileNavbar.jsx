@@ -37,6 +37,8 @@ function MobileNavbar() {
 
   const navigationMenuIsOpen = Boolean(navigationAnchor);
 
+  const canManageArticles = user?.role === "manager" || user?.role === "admin";
+
   const handleOpenNavigationMenu = (event) => {
     setNavigationAnchor(event.currentTarget);
   };
@@ -74,13 +76,9 @@ function MobileNavbar() {
         bgcolor: "background.paper",
         borderBottom: "1px solid",
         borderColor: "divider",
-
-        // חשוב:
-        // נותן ל-Menu של MUI להופיע מעל ה-Navbar
         zIndex: (theme) => theme.zIndex.appBar,
       }}
     >
-      {/* השורה העליונה */}
       <Box
         sx={{
           height: 58,
@@ -123,15 +121,17 @@ function MobileNavbar() {
                 },
               }}
             >
-              <MenuItem
-                selected={isMyArticlesPage}
-                onClick={() => handleNavigate("/my_articles")}
-              >
-                <ListItemIcon>
-                  <ArticleOutlined fontSize="small" />
-                </ListItemIcon>
-                My Articles
-              </MenuItem>
+              {canManageArticles && (
+                <MenuItem
+                  selected={isMyArticlesPage}
+                  onClick={() => handleNavigate("/my_articles")}
+                >
+                  <ListItemIcon>
+                    <ArticleOutlined fontSize="small" />
+                  </ListItemIcon>
+                  My Articles
+                </MenuItem>
+              )}
 
               <MenuItem
                 selected={isMLInsightsPage}
@@ -243,7 +243,6 @@ function MobileNavbar() {
         )}
       </Box>
 
-      {/* שורת החיפוש */}
       <Box
         sx={{
           width: "100%",

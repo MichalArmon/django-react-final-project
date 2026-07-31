@@ -55,6 +55,7 @@ function DesktopNavbar() {
   };
 
   const activeTab = getActiveTab();
+  const canManageArticles = user?.role === "manager" || user?.role === "admin";
 
   return (
     <AppBar
@@ -123,19 +124,21 @@ function DesktopNavbar() {
                 },
               }}
             >
-              <Tab
-                value="/my_articles"
-                label="My articles"
-                onClick={() => navigate("/my_articles")}
-                sx={{
-                  minHeight: 60,
-                  fontWeight: activeTab === "/my_articles" ? 700 : 400,
+              {canManageArticles && (
+                <Tab
+                  value="/my_articles"
+                  label="My articles"
+                  onClick={() => navigate("/my_articles")}
+                  sx={{
+                    minHeight: 60,
+                    fontWeight: activeTab === "/my_articles" ? 700 : 400,
 
-                  "&.Mui-selected": {
-                    color: "text.primary",
-                  },
-                }}
-              />
+                    "&.Mui-selected": {
+                      color: "text.primary",
+                    },
+                  }}
+                />
+              )}
 
               <Tab
                 value="/ml-insights"

@@ -520,3 +520,22 @@ https://github.com/MichalArmon
 Project repository:
 
 https://github.com/MichalArmon/django-react-final-project
+
+## Demo Users
+
+### Manager
+
+Username: daniel_cohen  
+Password: DanielManager2026!
+
+Role: Manager
+
+## Demo Admin
+
+Username: articlehub_admin  
+Password: ArticleHubAdmin2026!
+
+### Demo Reader
+
+Username: demo_reader  
+Password: DemoReader2026!
