@@ -1,6 +1,6 @@
 const loginInitialUserData = {
-  email: "admin",
-  password: "AdminBlog#2026!",
+  email: "articlehub_admin",
+  password: "ArticleHubAdmin2026!",
 };
 
 export default loginInitialUserData;
