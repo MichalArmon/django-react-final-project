@@ -523,19 +523,49 @@ https://github.com/MichalArmon/django-react-final-project
 
 ## Demo Users
 
+Use the following demo accounts to test the application.
+
+### Admin
+
+Username: `demo_admin`  
+Password: `DemoAdmin2026!`
+
+Permissions:
+
+- View all users
+- Edit users
+- Access the users management page
+- Create, edit and delete articles
+- Use the Machine Learning Playground
+- Like articles and add comments
+
 ### Manager
 
-Username: daniel_cohen  
-Password: DanielManager2026!
+Username: `demo_manager`  
+Password: `DemoManager2026!`
 
-Role: Manager
+Permissions:
 
-## Demo Admin
+- Create articles
+- Edit articles
+- Delete articles
+- View My Articles
+- Use the Machine Learning Playground
+- Like articles and add comments
 
-Username: articlehub_admin  
-Password: ArticleHubAdmin2026!
+### Reader
 
-### Demo Reader
+Username: `demo_reader`  
+Password: `DemoReader2026!`
 
-Username: demo_reader  
-Password: DemoReader2026!
+Permissions:
+
+- Browse articles
+- View article details
+- Search articles
+- Like articles
+- Add comments
+- Edit personal profile
+- Use the Machine Learning Playground
+
+The Reader account cannot create, edit or delete articles and cannot access the users management page.
