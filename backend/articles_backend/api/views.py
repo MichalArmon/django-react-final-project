@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import (
+    ListAPIView,
     ListCreateAPIView,
     RetrieveUpdateAPIView,
     RetrieveUpdateDestroyAPIView,
@@ -25,7 +26,7 @@ from rest_framework.views import APIView
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db.models import F
-from .models import Article, Product, Comment
+from .models import Article, Product, Comment, Tag
 from .permissions import (
     IsManager,
     IsCommentOwnerOrAdmin,
@@ -37,6 +38,7 @@ from .serializers import (
     CustomTokenObtainPairSerializer,
     CommentSerializer,
     UserSelfUpdateSerializer,
+    TagSerializer,
 )
 
 # הנתיב לתיקייה שבה נמצאים קובצי המודל
@@ -337,3 +339,9 @@ class CommentDetails(RetrieveUpdateDestroyAPIView):
             IsAuthenticated(),
             IsCommentOwnerOrAdmin(),
         ]
+
+
+class TagsList(ListAPIView):
+    queryset = Tag.objects.all().order_by("name")
+    serializer_class = TagSerializer
+    permission_classes = [AllowAny]

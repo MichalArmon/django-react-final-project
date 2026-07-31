@@ -12,7 +12,7 @@ const ArticleToServer = (articleDetails) => {
     title: articleDetails.title,
     content: articleDetails.content,
     author: GetUserId(),
-    tags: articleDetails.tags || [],
+    tag_ids: articleDetails.tags || [],
     published_at: articleDetails.published_at,
     views: articleDetails.views || 0,
     likes: articleDetails.likes || 0,

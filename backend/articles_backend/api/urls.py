@@ -51,4 +51,9 @@ urlpatterns = [
         views.CurrentUserDetails.as_view(),
         name="current-user-details",
     ),
+    path(
+        "tags/",
+        views.TagsList.as_view(),
+        name="tags",
+    ),
 ]

@@ -9,28 +9,30 @@ import {
   Paper,
   TextField,
 } from "@mui/material";
-
 import { CheckCircle, RadioButtonUnchecked } from "@mui/icons-material";
 
 import Form from "../form/Form";
 import useForm from "../../hooks/useForm";
 import { articleSchema } from "../../models/Article";
-
-const tagOptions = [
-  { id: 1, name: "Technology" },
-  { id: 2, name: "Business" },
-  { id: 3, name: "Health" },
-  { id: 4, name: "Education" },
-  { id: 5, name: "Travel" },
-  { id: 6, name: "Finance" },
-  { id: 7, name: "Sports" },
-  { id: 8, name: "Entertainment" },
-];
+import { useEffect, useState } from "react";
+import api from "../../services/apiService";
 
 function ArticleForm({ handleSubmitArticle, initialDataArticle, title }) {
   const { handleChange, handleSubmit, errors, formDetails, handleReset } =
     useForm(initialDataArticle, articleSchema, handleSubmitArticle);
+  const [tagOptions, setTagOptions] = useState([]);
+  useEffect(() => {
+    const getTags = async () => {
+      try {
+        const response = await api.get("/tags/");
+        setTagOptions(response.data.results || response.data);
+      } catch (error) {
+        console.log("Get tags error:", error.response?.data || error.message);
+      }
+    };
 
+    getTags();
+  }, []);
   const handleTagToggle = (tagId) => {
     const currentTags = formDetails.tags || [];
 

@@ -175,9 +175,28 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    author_username = serializers.CharField(source="author.username", read_only=True)
-    comments = CommentSerializer(many=True, read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
+    author_username = serializers.CharField(
+        source="author.username",
+        read_only=True,
+    )
+
+    comments = CommentSerializer(
+        many=True,
+        read_only=True,
+    )
+
+    tags = TagSerializer(
+        many=True,
+        read_only=True,
+    )
+
+    tag_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all(),
+        source="tags",
+        write_only=True,
+    )
+
     is_liked = serializers.SerializerMethodField()
 
     class Meta:
@@ -189,6 +208,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             "author",
             "author_username",
             "tags",
+            "tag_ids",
             "published_at",
             "views",
             "likes",
@@ -197,6 +217,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             "comments",
             "is_liked",
         )
+
         read_only_fields = ("author",)
 
     def get_is_liked(self, obj):
@@ -205,7 +226,9 @@ class ArticleSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return False
 
-        return obj.liked_by.filter(pk=request.user.pk).exists()
+        return obj.liked_by.filter(
+            pk=request.user.pk,
+        ).exists()
 
 
 class ProductSerializer(serializers.ModelSerializer):
