@@ -9,36 +9,61 @@ import {
   Paper,
   TextField,
 } from "@mui/material";
+
 import { CheckCircle, RadioButtonUnchecked } from "@mui/icons-material";
+
+import { useEffect, useMemo, useState } from "react";
 
 import Form from "../form/Form";
 import useForm from "../../hooks/useForm";
 import { articleSchema } from "../../models/Article";
-import { useEffect, useState } from "react";
 import api from "../../services/apiService";
 
 function ArticleForm({ handleSubmitArticle, initialDataArticle, title }) {
+  const normalizedInitialData = useMemo(() => {
+    return {
+      ...initialDataArticle,
+
+      tags:
+        initialDataArticle?.tags?.map((tag) =>
+          typeof tag === "object" ? Number(tag.id) : Number(tag),
+        ) || [],
+    };
+  }, [initialDataArticle]);
+
   const { handleChange, handleSubmit, errors, formDetails, handleReset } =
-    useForm(initialDataArticle, articleSchema, handleSubmitArticle);
+    useForm(normalizedInitialData, articleSchema, handleSubmitArticle);
+
   const [tagOptions, setTagOptions] = useState([]);
+
   useEffect(() => {
     const getTags = async () => {
       try {
         const response = await api.get("/tags/");
-        setTagOptions(response.data.results || response.data);
+
+        const tags = response.data.results || response.data;
+
+        setTagOptions(Array.isArray(tags) ? tags : []);
       } catch (error) {
         console.log("Get tags error:", error.response?.data || error.message);
+
+        setTagOptions([]);
       }
     };
 
     getTags();
   }, []);
-  const handleTagToggle = (tagId) => {
-    const currentTags = formDetails.tags || [];
 
-    const updatedTags = currentTags.includes(tagId)
-      ? currentTags.filter((currentTagId) => currentTagId !== tagId)
-      : [...currentTags, tagId];
+  const handleTagToggle = (tagId) => {
+    const numericTagId = Number(tagId);
+
+    const currentTags = (formDetails.tags || []).map((tag) =>
+      typeof tag === "object" ? Number(tag.id) : Number(tag),
+    );
+
+    const updatedTags = currentTags.includes(numericTagId)
+      ? currentTags.filter((currentTagId) => currentTagId !== numericTagId)
+      : [...currentTags, numericTagId];
 
     handleChange({
       target: {
@@ -47,6 +72,10 @@ function ArticleForm({ handleSubmitArticle, initialDataArticle, title }) {
       },
     });
   };
+
+  const selectedTagIds = (formDetails.tags || []).map((tag) =>
+    typeof tag === "object" ? Number(tag.id) : Number(tag),
+  );
 
   return (
     <Form onSubmit={handleSubmit} title={title} onReset={handleReset}>
@@ -109,16 +138,18 @@ function ArticleForm({ handleSubmitArticle, initialDataArticle, title }) {
               }}
             >
               {tagOptions.map((tag) => {
-                const isSelected = (formDetails.tags || []).includes(tag.id);
+                const tagId = Number(tag.id);
+
+                const isSelected = selectedTagIds.includes(tagId);
 
                 return (
                   <FormControlLabel
-                    key={tag.id}
+                    key={tagId}
                     label={tag.name}
                     control={
                       <Checkbox
                         checked={isSelected}
-                        onChange={() => handleTagToggle(tag.id)}
+                        onChange={() => handleTagToggle(tagId)}
                         icon={<RadioButtonUnchecked />}
                         checkedIcon={<CheckCircle />}
                         sx={{
