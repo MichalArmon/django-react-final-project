@@ -183,6 +183,7 @@ function MLInsightsPage() {
                   xs: "2rem",
                   md: "3.2rem",
                 },
+                mx: "auto",
               }}
             >
               Article Views Prediction
@@ -190,6 +191,7 @@ function MLInsightsPage() {
 
             <Typography
               sx={{
+                mx: "auto",
                 mt: 2,
                 maxWidth: 720,
                 fontSize: {

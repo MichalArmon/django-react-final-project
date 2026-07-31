@@ -208,6 +208,7 @@ function MLPlaygroundPage() {
                   md: "4rem",
                 },
                 lineHeight: 1.05,
+                mx: "auto",
               }}
             >
               Predict article views
@@ -223,6 +224,7 @@ function MLPlaygroundPage() {
                   md: "1.15rem",
                 },
                 lineHeight: 1.8,
+                mx: "auto",
               }}
             >
               Enter article information and let the trained machine learning

@@ -10,7 +10,6 @@ import {
   Stack,
   Tooltip,
   Typography,
-  Collapse,
 } from "@mui/material";
 
 import {
@@ -18,18 +17,19 @@ import {
   ArrowForwardRounded,
   BoltRounded,
   CheckBoxOutlineBlankRounded,
-  FavoriteBorderRounded,
-  VisibilityOutlined,
-  EditRounded,
   DeleteOutlineRounded,
+  EditRounded,
+  FavoriteBorderRounded,
   FavoriteRounded,
+  VisibilityOutlined,
 } from "@mui/icons-material";
-import ArticleComments from "./ArticleComments";
-import { useState } from "react";
 
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import ArticleComments from "./ArticleComments";
 import { useComment } from "../../providers/CommentProvider";
 import { useUser } from "../../providers/UserProvider";
-import { useNavigate } from "react-router-dom";
 import { useArticle } from "../../providers/ArticleProvider";
 
 function formatDate(dateString) {
@@ -45,21 +45,15 @@ function formatDate(dateString) {
     year: "numeric",
   });
 
-  const formattedDate = dateFormatter.format(date);
-
-  return formattedDate;
+  return dateFormatter.format(date);
 }
 
 function calculateReadingTime(wordCount = 0) {
   const wordsPerMinute = 200;
-
   const exactReadingTime = wordCount / wordsPerMinute;
-
   const roundedReadingTime = Math.ceil(exactReadingTime);
 
-  const minimumReadingTime = Math.max(1, roundedReadingTime);
-
-  return minimumReadingTime;
+  return Math.max(1, roundedReadingTime);
 }
 
 function formatNumber(value = 0) {
@@ -75,7 +69,7 @@ function formatNumber(value = 0) {
   return value.toString();
 }
 
-function ArticleCard({ article }) {
+function ArticleCard({ article, onLikeChange }) {
   const {
     id,
     title,
@@ -90,13 +84,28 @@ function ArticleCard({ article }) {
     comments = [],
     is_breaking_news = false,
   } = article;
+
   const [showComments, setShowComments] = useState(false);
   const [likesCount, setLikesCount] = useState(likes);
   const [isLiked, setIsLiked] = useState(is_liked);
   const [isLiking, setIsLiking] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(comments?.length || 0);
+
   const { user } = useUser();
+
   const { handleDeleteArticle, handleLikeArticle } = useArticle();
+
+  const { currentComments, handleGetByArticle } = useComment();
+
   const navigate = useNavigate();
+
+  const isArticleOwner =
+    user && Number(article.author) === Number(user.user_id);
+
+  const titleFixed = title.split("#")[0];
+
+  const visibleTags = tags.slice(0, 3);
+
   const handleDelete = async () => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this article?",
@@ -121,29 +130,21 @@ function ArticleCard({ article }) {
 
       setLikesCount(result.likes);
       setIsLiked(result.liked);
+
+      onLikeChange?.(id, result.liked);
     } catch (error) {
       console.error("Like failed:", error);
     } finally {
       setIsLiking(false);
     }
   };
-  const isArticleOwner =
-    user && Number(article.author) === Number(user.user_id);
 
-  const {
-    currentComments,
-
-    handleGetByArticle,
-  } = useComment();
-
-  const titleFixed = title.split("#")[0];
   const handleToggleComments = async () => {
     await handleGetByArticle(id);
-    setShowComments((prev) => !prev);
+
+    setShowComments((previousValue) => !previousValue);
   };
-  const [commentsCount, setCommentsCount] = useState(comments?.length || 0);
-  const visibleTags = tags.slice(0, 3);
-  const extraTags = Math.max(0, tags.length - visibleTags.length);
+
   return (
     <Card
       elevation={0}
@@ -158,6 +159,7 @@ function ArticleCard({ article }) {
         overflow: "hidden",
         backgroundColor: "background.paper",
         transition: "transform 0.25s ease, box-shadow 0.25s ease",
+
         "&:hover": {
           transform: "translateY(-6px)",
           boxShadow: "0 18px 45px rgba(47, 10, 69, 0.12)",
@@ -172,6 +174,7 @@ function ArticleCard({ article }) {
             : "linear-gradient(90deg, #2f0a45, #ba68c8)",
         }}
       />
+
       {isArticleOwner && (
         <Tooltip title="Delete article">
           <IconButton
@@ -200,6 +203,7 @@ function ArticleCard({ article }) {
           </IconButton>
         </Tooltip>
       )}
+
       <CardContent
         sx={{
           flexGrow: 1,
@@ -223,7 +227,7 @@ function ArticleCard({ article }) {
                   fontWeight: 700,
                 }}
               >
-                {author_username?.charAt(0)?.toUpperCase() || "A"}{" "}
+                {author_username?.charAt(0)?.toUpperCase() || "A"}
               </Avatar>
 
               <Box>
@@ -234,15 +238,20 @@ function ArticleCard({ article }) {
                     color: "text.primary",
                   }}
                 >
-                  {" "}
                   {author_username || "Unknown author"}
                 </Typography>
-                <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                  {" "}
+
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
                   {formatDate(published_at)}
                 </Typography>
               </Box>
             </Stack>
+
             {is_breaking_news && (
               <Chip
                 icon={<BoltRounded />}
@@ -257,6 +266,7 @@ function ArticleCard({ article }) {
               />
             )}
           </Stack>
+
           <Box>
             <Typography
               variant="h5"
@@ -274,6 +284,7 @@ function ArticleCard({ article }) {
             >
               {titleFixed}
             </Typography>
+
             <Typography
               variant="body2"
               sx={{
@@ -288,6 +299,7 @@ function ArticleCard({ article }) {
               {content}
             </Typography>
           </Box>
+
           <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
             {visibleTags.map((tag) => (
               <Chip
@@ -306,7 +318,9 @@ function ArticleCard({ article }) {
           </Stack>
         </Stack>
       </CardContent>
+
       <Divider />
+
       <CardActions
         sx={{
           px: 2,
@@ -331,9 +345,15 @@ function ArticleCard({ article }) {
               direction="row"
               spacing={0.5}
               alignItems="center"
-              sx={{ flexShrink: 0 }}
+              sx={{
+                flexShrink: 0,
+              }}
             >
-              <VisibilityOutlined sx={{ fontSize: 18 }} />
+              <VisibilityOutlined
+                sx={{
+                  fontSize: 18,
+                }}
+              />
 
               <Typography variant="caption">{formatNumber(views)}</Typography>
             </Stack>
@@ -348,9 +368,18 @@ function ArticleCard({ article }) {
             >
               <Stack direction="row" spacing={0.5} alignItems="center">
                 {isLiked ? (
-                  <FavoriteRounded sx={{ fontSize: 18 }} />
+                  <FavoriteRounded
+                    sx={{
+                      fontSize: 18,
+                      color: "error.main",
+                    }}
+                  />
                 ) : (
-                  <FavoriteBorderRounded sx={{ fontSize: 18 }} />
+                  <FavoriteBorderRounded
+                    sx={{
+                      fontSize: 18,
+                    }}
+                  />
                 )}
 
                 <Typography variant="caption">
@@ -359,6 +388,7 @@ function ArticleCard({ article }) {
               </Stack>
             </IconButton>
           </Tooltip>
+
           <Tooltip title={showComments ? "Hide comments" : "Show comments"}>
             <IconButton
               onClick={handleToggleComments}
@@ -366,7 +396,11 @@ function ArticleCard({ article }) {
               aria-label="show comments"
             >
               <Stack direction="row" spacing={0.6} alignItems="center">
-                <CheckBoxOutlineBlankRounded sx={{ fontSize: 17 }} />
+                <CheckBoxOutlineBlankRounded
+                  sx={{
+                    fontSize: 17,
+                  }}
+                />
 
                 <Typography variant="caption">{commentsCount}</Typography>
               </Stack>
@@ -383,35 +417,44 @@ function ArticleCard({ article }) {
                 flexShrink: 0,
               }}
             >
-              <AccessTimeRounded sx={{ fontSize: 18 }} />
+              <AccessTimeRounded
+                sx={{
+                  fontSize: 18,
+                }}
+              />
 
-              <Typography variant="caption" sx={{ whiteSpace: "nowrap" }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  whiteSpace: "nowrap",
+                }}
+              >
                 {calculateReadingTime(word_count)} min
               </Typography>
             </Stack>
           </Tooltip>
         </Stack>
+
         {isArticleOwner && (
-          <>
-            <Tooltip title="Edit article">
-              <IconButton
-                onClick={() => navigate(`/articles/${article.id}/edit`)}
-                size="small"
-                aria-label="edit article"
-                sx={{
-                  flexShrink: 0,
-                  color: "primary.main",
-                  border: "1px solid",
-                  borderColor: "divider",
-                  "&:hover": {
-                    backgroundColor: "rgba(47, 10, 69, 0.06)",
-                  },
-                }}
-              >
-                <EditRounded fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </>
+          <Tooltip title="Edit article">
+            <IconButton
+              onClick={() => navigate(`/articles/${article.id}/edit`)}
+              size="small"
+              aria-label="edit article"
+              sx={{
+                flexShrink: 0,
+                color: "primary.main",
+                border: "1px solid",
+                borderColor: "divider",
+
+                "&:hover": {
+                  backgroundColor: "rgba(47, 10, 69, 0.06)",
+                },
+              }}
+            >
+              <EditRounded fontSize="small" />
+            </IconButton>
+          </Tooltip>
         )}
 
         <Tooltip title="Read article">
@@ -423,6 +466,7 @@ function ArticleCard({ article }) {
               color: "primary.main",
               border: "1px solid",
               borderColor: "divider",
+
               "&:hover": {
                 backgroundColor: "rgba(47, 10, 69, 0.06)",
               },
@@ -432,6 +476,7 @@ function ArticleCard({ article }) {
           </IconButton>
         </Tooltip>
       </CardActions>
+
       <ArticleComments
         articleName={title}
         comments={currentComments}
@@ -439,7 +484,7 @@ function ArticleCard({ article }) {
         setShowComments={setShowComments}
         id={id}
         onCommentCreated={() => {
-          setCommentsCount((prev) => prev + 1);
+          setCommentsCount((previousCount) => previousCount + 1);
         }}
       />
     </Card>

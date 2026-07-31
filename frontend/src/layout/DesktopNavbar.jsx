@@ -1,4 +1,9 @@
-import { AccountCircle, AutoGraph, Psychology } from "@mui/icons-material";
+import {
+  AccountCircle,
+  AutoGraph,
+  FavoriteRounded,
+  Psychology,
+} from "@mui/icons-material";
 
 import {
   AppBar,
@@ -39,6 +44,10 @@ function DesktopNavbar() {
       return "/my_articles";
     }
 
+    if (location.pathname.startsWith("/favorites")) {
+      return "/favorites";
+    }
+
     if (location.pathname.startsWith("/admin/users")) {
       return "/admin/users";
     }
@@ -55,6 +64,7 @@ function DesktopNavbar() {
   };
 
   const activeTab = getActiveTab();
+
   const canManageArticles = user?.role === "manager" || user?.role === "admin";
 
   return (
@@ -139,6 +149,22 @@ function DesktopNavbar() {
                   }}
                 />
               )}
+
+              <Tab
+                value="/favorites"
+                label="Favorites"
+                icon={<FavoriteRounded />}
+                iconPosition="start"
+                onClick={() => navigate("/favorites")}
+                sx={{
+                  minHeight: 60,
+                  fontWeight: activeTab === "/favorites" ? 700 : 400,
+
+                  "&.Mui-selected": {
+                    color: "text.primary",
+                  },
+                }}
+              />
 
               <Tab
                 value="/ml-insights"

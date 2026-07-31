@@ -8,11 +8,20 @@ import { useArticle } from "../providers/ArticleProvider";
 import ArticleCard from "../components/articles/ArticleCard";
 
 function FavoritesPage() {
-  const { favoriteArticles, handleGetFavoriteArticles } = useArticle();
+  const { favoriteArticles, setFavoriteArticles, handleGetFavoriteArticles } =
+    useArticle();
 
   useEffect(() => {
     handleGetFavoriteArticles();
   }, []);
+
+  const handleFavoriteChange = (articleId, isLiked) => {
+    if (!isLiked) {
+      setFavoriteArticles((currentFavoriteArticles) =>
+        currentFavoriteArticles.filter((article) => article.id !== articleId),
+      );
+    }
+  };
 
   return (
     <Box
@@ -47,7 +56,7 @@ function FavoritesPage() {
               width: 180,
               height: 180,
               borderRadius: "50%",
-
+              bgcolor: "rgba(255,255,255,0.08)",
               top: -80,
               right: -60,
             }}
@@ -57,6 +66,7 @@ function FavoritesPage() {
             sx={{
               position: "relative",
               zIndex: 1,
+              textAlign: "center",
             }}
           >
             <Favorite
@@ -81,12 +91,11 @@ function FavoritesPage() {
 
             <Typography
               sx={{
-                textAlign: "center",
                 mt: 1,
                 maxWidth: 650,
+                mx: "auto",
                 color: "rgba(255,255,255,0.88)",
                 lineHeight: 1.8,
-                mx: "auto",
               }}
             >
               All the articles you liked, collected in one place.
@@ -118,7 +127,12 @@ function FavoritesPage() {
               }}
             />
 
-            <Typography variant="h5" sx={{ fontWeight: 900 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 900,
+              }}
+            >
               No favorite articles yet
             </Typography>
 
@@ -137,7 +151,10 @@ function FavoritesPage() {
           <Grid container spacing={3}>
             {favoriteArticles.map((article) => (
               <Grid item xs={12} sm={6} md={4} key={article.id}>
-                <ArticleCard article={article} />
+                <ArticleCard
+                  article={article}
+                  onLikeChange={handleFavoriteChange}
+                />
               </Grid>
             ))}
           </Grid>
