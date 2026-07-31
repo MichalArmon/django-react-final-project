@@ -140,9 +140,9 @@ function MLPlaygroundPage() {
       sx={{
         minHeight: "100vh",
         py: { xs: 4, md: 7 },
-        background:
-          "radial-gradient(circle at top left, rgba(99, 102, 241, 0.16), transparent 35%), radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.14), transparent 35%)",
-        bgcolor: "background.default",
+        // background:
+        //   "radial-gradient(circle at top left, rgba(99, 102, 241, 0.16), transparent 35%), radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.14), transparent 35%)",
+        // bgcolor: "background.default",
       }}
     >
       <Container maxWidth="lg">

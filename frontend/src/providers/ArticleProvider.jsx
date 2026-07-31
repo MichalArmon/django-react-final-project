@@ -15,6 +15,7 @@ export default function ArticleProvider({ children }) {
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [myArticles, setMyArticles] = useState([]);
   const [totalArticles, setTotalArticles] = useState(0);
+  const [favoriteArticles, setFavoriteArticles] = useState([]);
 
   const URL = "articles/";
 
@@ -264,6 +265,28 @@ export default function ArticleProvider({ children }) {
     }
   }
 
+  // ❤️❤️❤️ GET FAVORITE ARTICLES ❤️❤️❤️
+  const handleGetFavoriteArticles = async () => {
+    try {
+      const response = await api.get("articles/favorites/");
+
+      const results = response.data.results || response.data;
+
+      setFavoriteArticles(results);
+
+      return results;
+    } catch (error) {
+      console.log(
+        "Get favorite articles failed:",
+        error.response?.data || error.message,
+      );
+
+      setSnack("error", "Favorite articles could not be loaded");
+
+      throw error;
+    }
+  };
+
   return (
     <ArticleContext.Provider
       value={{
@@ -289,6 +312,9 @@ export default function ArticleProvider({ children }) {
         handleEditArticle,
         handleDeleteArticle,
         handleLikeArticle,
+        favoriteArticles,
+        setFavoriteArticles,
+        handleGetFavoriteArticles,
       }}
     >
       {children}

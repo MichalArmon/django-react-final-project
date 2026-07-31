@@ -16,6 +16,7 @@ import MLInsightsPage from "./pages/MLInsightsPage";
 import MLPlaygroundPage from "./pages/MLPlaygroundPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ManagerRoute from "./routes/ManagerRoute";
+import FavoritesPage from "./pages/FavoritesPage";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
         <Route path="/ml-insights" element={<MLInsightsPage />} />
         <Route path="/ml-playground" element={<MLPlaygroundPage />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
       </Route>
     </Routes>
   );

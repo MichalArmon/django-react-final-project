@@ -9,6 +9,11 @@ from .views import CustomTokenObtainPairView
 urlpatterns = [
     path("articles/", views.ArticlesListCreate.as_view(), name="articles"),
     path(
+        "articles/favorites/",
+        views.FavoriteArticlesList.as_view(),
+        name="favorite-articles",
+    ),
+    path(
         "articles/<int:pk>/",
         views.ArticleDetails.as_view(),
         name="article-details",

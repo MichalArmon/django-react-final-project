@@ -117,7 +117,7 @@ function MLInsightsPage() {
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "background.default",
+        // bgcolor: "background.default",
         py: { xs: 4, md: 7 },
       }}
     >

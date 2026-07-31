@@ -345,3 +345,14 @@ class TagsList(ListAPIView):
     queryset = Tag.objects.all().order_by("name")
     serializer_class = TagSerializer
     permission_classes = [AllowAny]
+
+
+# ❤️ Favorite Articles
+class FavoriteArticlesList(ListAPIView):
+    serializer_class = ArticleSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Article.objects.filter(liked_by=self.request.user).order_by(
+            "-published_at"
+        )
