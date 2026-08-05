@@ -168,13 +168,10 @@ function EditUserForm() {
           error={Boolean(errors.role)}
           helperText={errors.role}
         >
-          <MenuItem value="user">User</MenuItem>
-
-          <MenuItem value="author">Author</MenuItem>
-
-          <MenuItem value="editor">Editor</MenuItem>
-
+          {" "}
+          <MenuItem value="reader">Reader</MenuItem>
           <MenuItem value="manager">Manager</MenuItem>
+          <MenuItem value="admin">Admin</MenuItem>
         </TextField>
       </Grid>
     </Form>

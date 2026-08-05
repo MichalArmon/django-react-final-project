@@ -1,6 +1,6 @@
 const loginUserToServer = (userDetails) => {
   return {
-    username: userDetails.email,
+    username: userDetails.username || userDetails.email,
     password: userDetails.password,
   };
 };

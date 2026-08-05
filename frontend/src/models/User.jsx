@@ -19,7 +19,10 @@ const User = Joi.object({
 
   experience_years: Joi.number().min(0).max(60).required(),
 
-  role: Joi.string().valid("author", "reader", "admin").required(),
+  role: Joi.string().valid("reader", "manager", "admin").required().messages({
+    "any.only": "Role must be Reader, Manager or Admin",
+    "string.empty": "Role is required",
+  }),
 });
 
 export default User;

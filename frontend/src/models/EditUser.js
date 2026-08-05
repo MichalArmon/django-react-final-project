@@ -36,13 +36,10 @@ const EditUser = Joi.object({
     "number.min": "Experience years cannot be negative",
   }),
 
-  role: Joi.string()
-    .valid("user", "author", "editor", "manager")
-    .required()
-    .messages({
-      "any.only": "Please select a valid role",
-      "string.empty": "Role is required",
-    }),
+  role: Joi.string().valid("reader", "manager", "admin").required().messages({
+    "any.only": "Role must be Reader, Manager or Admin",
+    "string.empty": "Role is required",
+  }),
 });
 
 export default EditUser;

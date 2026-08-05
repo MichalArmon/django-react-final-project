@@ -3,6 +3,12 @@ from django.contrib.auth.models import User
 
 
 class UserProfile(models.Model):
+    ROLE_CHOICES = [
+        ("reader", "Reader"),
+        ("manager", "Manager"),
+        ("admin", "Admin"),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     bio = models.TextField(blank=True)
     city = models.CharField(max_length=100, blank=True)

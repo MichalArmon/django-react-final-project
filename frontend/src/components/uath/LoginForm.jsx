@@ -17,14 +17,14 @@ function LoginForm() {
       <Form onSubmit={handleSubmit} title="Login" onReset={handleReset}>
         <Grid item xs={12}>
           <TextField
-            label="Email"
-            name="email"
-            type="email"
+            label="Username or email"
+            name="username"
+            type="text"
             onChange={handleChange}
             fullWidth
-            value={formDetails.email}
-            error={Boolean(errors.email)}
-            helperText={errors.email}
+            value={formDetails.username}
+            error={Boolean(errors.username)}
+            helperText={errors.username}
           />
         </Grid>
         <Grid item xs={12}>

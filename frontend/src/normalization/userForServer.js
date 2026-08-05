@@ -1,8 +1,9 @@
 const userToServer = (userDetails) => {
+  const email = userDetails.email.trim().toLowerCase();
   return {
-    username: userDetails.email,
+    username: email,
     password: userDetails.password,
-    email: userDetails.email,
+    email: email,
     first_name: userDetails.firstName,
     last_name: userDetails.lastName,
     profile: {

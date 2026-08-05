@@ -4,6 +4,7 @@ import joblib
 import pandas as pd
 
 from django.contrib.auth.models import User
+from django.db.models import F
 from django.shortcuts import get_object_or_404
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -25,9 +26,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.db.models import F
+
 from .models import Article, Product, Comment, Tag
 from .permissions import (
+    IsAdmin,
     IsManager,
     IsCommentOwnerOrAdmin,
 )
@@ -80,22 +82,31 @@ def predict_views(request):
 
         prediction = model.predict(article_data)[0]
 
-        predicted_views = max(0, round(prediction))
+        predicted_views = max(
+            0,
+            round(prediction),
+        )
 
         return Response(
-            {"predicted_views": predicted_views},
+            {
+                "predicted_views": predicted_views,
+            },
             status=status.HTTP_200_OK,
         )
 
     except KeyError as error:
         return Response(
-            {"error": (f"Missing field: {error.args[0]}")},
+            {
+                "error": (f"Missing field: {error.args[0]}"),
+            },
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     except (TypeError, ValueError):
         return Response(
-            {"error": ("All input fields must contain " "valid values.")},
+            {
+                "error": ("All input fields must contain " "valid values."),
+            },
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -103,7 +114,23 @@ def predict_views(request):
 # 👤 Users / Register
 @api_view(["GET", "POST"])
 def users(request):
+    # GET — רק אדמין יכול לראות את רשימת המשתמשים
     if request.method == "GET":
+        admin_permission = IsAdmin()
+
+        if not admin_permission.has_permission(
+            request,
+            None,
+        ):
+            return Response(
+                {
+                    "detail": (
+                        "Only administrators can access " "the users management page."
+                    ),
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         users_queryset = User.objects.select_related("profile").all()
 
         serializer = UserSerializer(
@@ -111,9 +138,15 @@ def users(request):
             many=True,
         )
 
-        return Response(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
 
-    serializer = UserSerializer(data=request.data)
+    # POST — פתוח להרשמה
+    serializer = UserSerializer(
+        data=request.data,
+    )
 
     if serializer.is_valid():
         serializer.save()
@@ -132,25 +165,22 @@ def users(request):
 # 👤 User Details / Update / Delete
 class UserDetails(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.select_related("profile").all()
+
     serializer_class = UserSerializer
 
-    def get_permissions(self):
-        if self.request.method == "GET":
-            return [
-                IsAuthenticated(),
-                IsManager(),
-            ]
-
-        return [
-            IsAuthenticated(),
-            IsManager(),
-        ]
+    permission_classes = [
+        IsAuthenticated,
+        IsAdmin,
+    ]
 
 
 # 👤 Current User Profile
 class CurrentUserDetails(RetrieveUpdateAPIView):
     serializer_class = UserSelfUpdateSerializer
-    permission_classes = [IsAuthenticated]
+
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def get_object(self):
         return self.request.user
@@ -192,6 +222,7 @@ class ProductDetails(RetrieveUpdateDestroyAPIView):
 # 📰 Articles List / Create
 class ArticlesListCreate(ListCreateAPIView):
     queryset = Article.objects.all().order_by("-published_at")
+
     serializer_class = ArticleSerializer
 
     filter_backends = [
@@ -220,20 +251,26 @@ class ArticlesListCreate(ListCreateAPIView):
         "published_at",
     ]
 
-    ordering = ["-published_at"]
+    ordering = [
+        "-published_at",
+    ]
 
     def get_permissions(self):
         if self.request.method == "GET":
-            return [AllowAny()]
+            return [
+                AllowAny(),
+            ]
 
-        # רק מנהל יכול ליצור כתבה
+        # רק Manager או Admin יכולים ליצור כתבה
         return [
             IsAuthenticated(),
             IsManager(),
         ]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(
+            author=self.request.user,
+        )
 
 
 # 📰 Article Details / Update / Delete
@@ -243,9 +280,11 @@ class ArticleDetails(RetrieveUpdateDestroyAPIView):
 
     def get_permissions(self):
         if self.request.method == "GET":
-            return [AllowAny()]
+            return [
+                AllowAny(),
+            ]
 
-        # רק מנהל יכול לערוך ולמחוק כתבות
+        # רק Manager או Admin יכולים לערוך ולמחוק
         return [
             IsAuthenticated(),
             IsManager(),
@@ -254,18 +293,28 @@ class ArticleDetails(RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         article = self.get_object()
 
-        Article.objects.filter(pk=article.pk).update(views=F("views") + 1)
+        Article.objects.filter(
+            pk=article.pk,
+        ).update(
+            views=F("views") + 1,
+        )
 
         article.refresh_from_db()
 
-        serializer = self.get_serializer(article)
+        serializer = self.get_serializer(
+            article,
+        )
 
-        return Response(serializer.data)
+        return Response(
+            serializer.data,
+        )
 
 
 # 👍 Article Like Toggle
 class ArticleLikeView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def patch(self, request, pk):
         article = get_object_or_404(
@@ -275,20 +324,28 @@ class ArticleLikeView(APIView):
 
         user = request.user
 
-        if article.liked_by.filter(pk=user.pk).exists():
+        if article.liked_by.filter(
+            pk=user.pk,
+        ).exists():
             article.liked_by.remove(user)
+
             article.likes = max(
                 0,
                 article.likes - 1,
             )
+
             liked = False
 
         else:
             article.liked_by.add(user)
+
             article.likes += 1
+
             liked = True
 
-        article.save(update_fields=["likes"])
+        article.save(
+            update_fields=["likes"],
+        )
 
         return Response(
             {
@@ -303,8 +360,12 @@ class ArticleLikeView(APIView):
 # 💬 Comments List / Create
 class CommentListCreate(ListCreateAPIView):
     queryset = Comment.objects.all().order_by("created_at")
+
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -320,10 +381,14 @@ class CommentListCreate(ListCreateAPIView):
         "created_at",
     ]
 
-    ordering = ["created_at"]
+    ordering = [
+        "created_at",
+    ]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(
+            user=self.request.user,
+        )
 
 
 # 💬 Comment Details / Update / Delete
@@ -333,7 +398,9 @@ class CommentDetails(RetrieveUpdateDestroyAPIView):
 
     def get_permissions(self):
         if self.request.method == "GET":
-            return [AllowAny()]
+            return [
+                AllowAny(),
+            ]
 
         return [
             IsAuthenticated(),
@@ -341,18 +408,26 @@ class CommentDetails(RetrieveUpdateDestroyAPIView):
         ]
 
 
+# 🏷️ Tags
 class TagsList(ListAPIView):
     queryset = Tag.objects.all().order_by("name")
+
     serializer_class = TagSerializer
-    permission_classes = [AllowAny]
+
+    permission_classes = [
+        AllowAny,
+    ]
 
 
 # ❤️ Favorite Articles
 class FavoriteArticlesList(ListAPIView):
     serializer_class = ArticleSerializer
-    permission_classes = [IsAuthenticated]
+
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def get_queryset(self):
-        return Article.objects.filter(liked_by=self.request.user).order_by(
-            "-published_at"
-        )
+        return Article.objects.filter(
+            liked_by=self.request.user,
+        ).order_by("-published_at")

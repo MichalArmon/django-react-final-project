@@ -1,5 +1,5 @@
 const loginInitialUserData = {
-  email: "demo_admin",
+  username: "demo_admin",
   password: "DemoAdmin2026!",
 };
 
