@@ -17,13 +17,15 @@ import MLPlaygroundPage from "./pages/MLPlaygroundPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ManagerRoute from "./routes/ManagerRoute";
 import FavoritesPage from "./pages/FavoritesPage";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<ArticlesPage />} />
+        <Route index element={<HomePage />} />
         <Route path="/register" element={<RegisterForm />} />
+        <Route path="/articles" element={<ArticlesPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/my_articles" element={<MyArticlesPage />} />
         <Route

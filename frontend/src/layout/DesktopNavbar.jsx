@@ -59,6 +59,9 @@ function DesktopNavbar() {
     if (location.pathname.startsWith("/ml-playground")) {
       return "/ml-playground";
     }
+    if (location.pathname.startsWith("/articles")) {
+      return "/articles";
+    }
 
     return false;
   };
@@ -159,6 +162,21 @@ function DesktopNavbar() {
                 sx={{
                   minHeight: 60,
                   fontWeight: activeTab === "/favorites" ? 700 : 400,
+
+                  "&.Mui-selected": {
+                    color: "text.primary",
+                  },
+                }}
+              />
+              <Tab
+                value="/articles"
+                label="articles"
+                icon={<AutoGraph />}
+                iconPosition="start"
+                onClick={() => navigate("/articles")}
+                sx={{
+                  minHeight: 60,
+                  fontWeight: activeTab === "/articles" ? 700 : 400,
 
                   "&.Mui-selected": {
                     color: "text.primary",
