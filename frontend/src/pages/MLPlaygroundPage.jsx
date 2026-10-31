@@ -1,11 +1,6 @@
-import {
-  AutoAwesome,
-  Bolt,
-  Login,
-  Psychology,
-  RestartAlt,
-  TrendingUp,
-} from "@mui/icons-material";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
 
 import {
   Alert,
@@ -23,11 +18,23 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  ArrowForwardRounded,
+  AutoAwesomeRounded,
+  BoltRounded,
+  CheckCircleOutlineRounded,
+  DataObjectRounded,
+  LoginRounded,
+  PsychologyRounded,
+  RestartAltRounded,
+  TrendingUpRounded,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 
 import { useUser } from "../providers/UserProvider";
 import api from "../services/apiService";
+
+const MotionBox = motion.create(Box);
 
 const initialForm = {
   word_count: 500,
@@ -35,7 +42,63 @@ const initialForm = {
   author_experience_years: 3,
 };
 
-function MLPlaygroundPage() {
+const colors = {
+  background: "#FCFBFD",
+  ink: "#201D2A",
+  muted: "#837C8F",
+  purple: "#8460B6",
+  darkPurple: "#33244E",
+  border: "#ECE9F0",
+  lavender: "#F1EBF9",
+};
+
+function SettingTitle({ number, title, description }) {
+  return (
+    <Stack direction="row" spacing={2} alignItems="flex-start">
+      <Box
+        sx={{
+          width: 32,
+          height: 32,
+          borderRadius: 2,
+          bgcolor: colors.lavender,
+          color: colors.purple,
+          display: "grid",
+          placeItems: "center",
+          fontWeight: 800,
+          fontSize: 12,
+          flexShrink: 0,
+        }}
+      >
+        {number}
+      </Box>
+
+      <Box>
+        <Typography
+          sx={{
+            fontWeight: 750,
+            color: colors.ink,
+            fontSize: 16,
+          }}
+        >
+          {title}
+        </Typography>
+
+        <Typography
+          variant="body2"
+          sx={{
+            color: colors.muted,
+            mt: 0.3,
+            lineHeight: 1.7,
+          }}
+        >
+          {description}
+        </Typography>
+      </Box>
+    </Stack>
+  );
+}
+
+export default function MLPlaygroundPage() {
   const { user } = useUser();
   const navigate = useNavigate();
 
@@ -43,6 +106,11 @@ function MLPlaygroundPage() {
   const [predictedViews, setPredictedViews] = useState(null);
   const [isPredicting, setIsPredicting] = useState(false);
   const [error, setError] = useState("");
+
+  const clearResult = () => {
+    setPredictedViews(null);
+    setError("");
+  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -52,18 +120,7 @@ function MLPlaygroundPage() {
       [name]: value,
     }));
 
-    setPredictedViews(null);
-    setError("");
-  };
-
-  const handleBreakingNewsChange = (event) => {
-    setFormData((prev) => ({
-      ...prev,
-      is_breaking_news: event.target.checked,
-    }));
-
-    setPredictedViews(null);
-    setError("");
+    clearResult();
   };
 
   const handleExperienceChange = (_, value) => {
@@ -72,56 +129,56 @@ function MLPlaygroundPage() {
       author_experience_years: value,
     }));
 
-    setPredictedViews(null);
-    setError("");
+    clearResult();
   };
 
-  const validateForm = () => {
+  const handleBreakingNewsChange = (event) => {
+    setFormData((prev) => ({
+      ...prev,
+      is_breaking_news: event.target.checked,
+    }));
+
+    clearResult();
+  };
+
+  const handleReset = () => {
+    setFormData(initialForm);
+    clearResult();
+  };
+
+  const handlePredict = async () => {
     const wordCount = Number(formData.word_count);
     const experience = Number(formData.author_experience_years);
 
     if (!Number.isFinite(wordCount) || wordCount <= 0) {
-      return "Word count must be greater than zero.";
+      setError("Word count must be greater than zero.");
+      return;
     }
 
     if (!Number.isFinite(experience) || experience < 0) {
-      return "Author experience cannot be negative.";
-    }
-
-    return "";
-  };
-
-  const handlePredict = async () => {
-    const validationError = validateForm();
-
-    if (validationError) {
-      setError(validationError);
+      setError("Author experience cannot be negative.");
       return;
     }
 
     try {
       setIsPredicting(true);
-      setError("");
-      setPredictedViews(null);
+      clearResult();
 
-      const dataForServer = {
-        word_count: Number(formData.word_count),
+      const response = await api.post("/predict-views/", {
+        word_count: wordCount,
         is_breaking_news: formData.is_breaking_news,
-        author_experience_years: Number(formData.author_experience_years),
-      };
-
-      const response = await api.post("/predict-views/", dataForServer);
+        author_experience_years: experience,
+      });
 
       setPredictedViews(response.data.predicted_views);
-    } catch (error) {
-      console.log("Prediction error:", error.response?.data || error.message);
+    } catch (err) {
+      console.error("Prediction error:", err.response?.data || err.message);
 
-      if (error.response?.status === 401) {
+      if (err.response?.status === 401) {
         setError("You must be logged in to run a prediction.");
       } else {
         setError(
-          error.response?.data?.error ||
-            "The prediction could not be completed.",
+          err.response?.data?.error || "The prediction could not be completed.",
         );
       }
     } finally {
@@ -129,492 +186,847 @@ function MLPlaygroundPage() {
     }
   };
 
-  const handleReset = () => {
-    setFormData(initialForm);
-    setPredictedViews(null);
-    setError("");
-  };
-
   return (
     <Box
+      component="main"
       sx={{
         minHeight: "100vh",
-        py: { xs: 4, md: 7 },
-        // background:
-        //   "radial-gradient(circle at top left, rgba(99, 102, 241, 0.16), transparent 35%), radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.14), transparent 35%)",
-        // bgcolor: "background.default",
+        bgcolor: colors.background,
+        color: colors.ink,
+        pb: { xs: 8, md: 12 },
       }}
     >
-      <Container maxWidth="lg">
-        <Paper
-          elevation={0}
+      <Container maxWidth="xl">
+        {/* INTRO */}
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
           sx={{
-            position: "relative",
-            overflow: "hidden",
-            mb: 4,
-            p: { xs: 3, md: 5 },
-            borderRadius: 5,
-            color: "white",
-            background:
-              "linear-gradient(135deg, #2537a7 0%, #6740bd 55%, #a63faa 100%)",
+            pt: { xs: 5, md: 9 },
+            mb: { xs: 5, md: 7 },
           }}
         >
-          <Box
-            sx={{
-              position: "absolute",
-              width: 260,
-              height: 260,
-              borderRadius: "50%",
-              bgcolor: "rgba(255,255,255,0.08)",
-              top: -120,
-              right: -60,
-            }}
-          />
-
-          <Box
-            sx={{
-              position: "absolute",
-              width: 150,
-              height: 150,
-              borderRadius: "50%",
-              bgcolor: "rgba(255,255,255,0.06)",
-              bottom: -70,
-              left: 90,
-            }}
-          />
-
-          <Box sx={{ position: "relative", zIndex: 1 }}>
-            <Chip
-              icon={<Psychology />}
-              label="Machine Learning Playground"
-              sx={{
-                mb: 2,
-                bgcolor: "rgba(255,255,255,0.16)",
-                color: "white",
-
-                "& .MuiChip-icon": {
-                  color: "white",
-                },
-              }}
-            />
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+            <AutoAwesomeRounded sx={{ color: colors.purple, fontSize: 19 }} />
 
             <Typography
-              variant="h2"
+              variant="overline"
               sx={{
-                maxWidth: 850,
-                fontWeight: 900,
-                fontSize: {
-                  xs: "2.2rem",
-                  md: "4rem",
-                },
-                lineHeight: 1.05,
-                mx: "auto",
+                color: colors.purple,
+                fontWeight: 800,
+                letterSpacing: 2,
               }}
             >
-              Predict article views
+              THE INTELLIGENCE LAB
             </Typography>
+          </Stack>
 
-            <Typography
-              sx={{
-                mt: 2,
-                maxWidth: 720,
-                color: "rgba(255,255,255,0.88)",
-                fontSize: {
-                  xs: "1rem",
-                  md: "1.15rem",
-                },
-                lineHeight: 1.8,
-                mx: "auto",
-              }}
-            >
-              Enter article information and let the trained machine learning
-              model estimate its expected number of views.
-            </Typography>
-          </Box>
-        </Paper>
+          <Typography
+            component="h1"
+            sx={{
+              fontSize: { xs: 44, md: 70 },
+              fontWeight: 800,
+              letterSpacing: "-0.065em",
+              lineHeight: 1.08,
+            }}
+          >
+            Predict the
+            <Box component="span" sx={{ color: colors.purple }}>
+              {" "}
+              impact.
+            </Box>
+          </Typography>
+
+          <Typography
+            sx={{
+              maxWidth: 640,
+              mt: 2.5,
+              color: colors.muted,
+              fontSize: { xs: 15, md: 18 },
+              lineHeight: 1.8,
+            }}
+          >
+            Explore how different article characteristics influence predicted
+            readership, powered by machine learning.
+          </Typography>
+        </MotionBox>
 
         {!user && (
           <Alert
             severity="info"
+            sx={{
+              mb: 4,
+              borderRadius: 3,
+              border: `1px solid ${colors.border}`,
+            }}
             action={
               <Button
                 color="inherit"
-                startIcon={<Login />}
-                onClick={() => navigate("/register")}
+                startIcon={<LoginRounded />}
+                onClick={() => navigate("/login")}
               >
                 Login
               </Button>
             }
-            sx={{
-              mb: 3,
-              borderRadius: 3,
-            }}
           >
-            You must be logged in because the prediction endpoint is protected.
+            Sign in to run predictions with our trained model.
           </Alert>
         )}
 
+        {/* MAIN WORKSPACE */}
         <Box
           sx={{
             display: "grid",
             gridTemplateColumns: {
               xs: "1fr",
-              md: "1.1fr 0.9fr",
+              md: "minmax(0, 1.05fr) minmax(0, 0.95fr)",
             },
             gap: 3,
             alignItems: "stretch",
           }}
         >
-          <Paper
-            elevation={0}
-            sx={{
-              p: { xs: 2.5, md: 4 },
-              borderRadius: 4,
-              border: "1px solid",
-              borderColor: "divider",
-              bgcolor: "background.paper",
-            }}
+          {/* LEFT — MODEL INPUTS */}
+          <MotionBox
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.15, duration: 0.6 }}
           >
-            <Stack
-              direction="row"
-              spacing={1.5}
-              alignItems="center"
-              sx={{ mb: 1 }}
+            <Paper
+              elevation={0}
+              sx={{
+                height: "100%",
+                p: { xs: 3, md: 4.5 },
+                border: `1px solid ${colors.border}`,
+                borderRadius: 4,
+                bgcolor: "#fff",
+              }}
             >
-              <Box
-                sx={{
-                  width: 44,
-                  height: 44,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 2.5,
-                  bgcolor: "primary.main",
-                  color: "primary.contrastText",
-                }}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mb: 1 }}
               >
-                <AutoAwesome />
-              </Box>
-
-              <Box>
-                <Typography variant="h5" sx={{ fontWeight: 900 }}>
-                  Article data
-                </Typography>
-
-                <Typography variant="body2" color="text.secondary">
-                  Complete the three features used during training.
-                </Typography>
-              </Box>
-            </Stack>
-
-            <Stack spacing={4} sx={{ mt: 4 }}>
-              <Box>
-                <Typography
-                  sx={{
-                    mb: 1,
-                    fontWeight: 800,
-                  }}
-                >
-                  Word count
-                </Typography>
-
-                <TextField
-                  fullWidth
-                  name="word_count"
-                  type="number"
-                  value={formData.word_count}
-                  onChange={handleChange}
-                  inputProps={{
-                    min: 1,
-                  }}
-                  helperText="The total number of words in the article."
-                />
-              </Box>
-
-              <Box>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ mb: 1 }}
-                >
-                  <Box>
-                    <Typography sx={{ fontWeight: 800 }}>
-                      Author experience
-                    </Typography>
-
-                    <Typography variant="body2" color="text.secondary">
-                      Years of professional experience
-                    </Typography>
+                <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <Box
+                    sx={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 2.5,
+                      bgcolor: colors.lavender,
+                      color: colors.purple,
+                      display: "grid",
+                      placeItems: "center",
+                    }}
+                  >
+                    <DataObjectRounded />
                   </Box>
 
-                  <Chip
-                    label={`${formData.author_experience_years} years`}
-                    color="primary"
-                    variant="outlined"
-                  />
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontSize: 21,
+                        fontWeight: 800,
+                        letterSpacing: "-0.035em",
+                      }}
+                    >
+                      Model Inputs
+                    </Typography>
+
+                    <Typography variant="caption" sx={{ color: colors.muted }}>
+                      Configure your prediction
+                    </Typography>
+                  </Box>
                 </Stack>
 
-                <Slider
-                  value={Number(formData.author_experience_years)}
-                  onChange={handleExperienceChange}
-                  min={0}
-                  max={40}
-                  step={1}
-                  marks={[
-                    { value: 0, label: "0" },
-                    { value: 10, label: "10" },
-                    { value: 20, label: "20" },
-                    { value: 30, label: "30" },
-                    { value: 40, label: "40" },
-                  ]}
-                  valueLabelDisplay="auto"
+                <Chip
+                  label="3 PARAMETERS"
+                  size="small"
+                  sx={{
+                    display: { xs: "none", sm: "flex" },
+                    bgcolor: colors.lavender,
+                    color: colors.purple,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    letterSpacing: 0.5,
+                  }}
                 />
-              </Box>
+              </Stack>
 
-              <Paper
-                elevation={0}
+              <Box
                 sx={{
-                  p: 2,
-                  borderRadius: 3,
-                  border: "1px solid",
-                  borderColor: formData.is_breaking_news
-                    ? "warning.main"
-                    : "divider",
-                  bgcolor: formData.is_breaking_news
-                    ? "rgba(255, 152, 0, 0.08)"
-                    : "action.hover",
+                  borderTop: `1px solid ${colors.border}`,
+                  mt: 3,
+                  mb: 4,
                 }}
-              >
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.is_breaking_news}
-                      onChange={handleBreakingNewsChange}
+              />
+
+              <Stack spacing={5}>
+                {/* WORD COUNT */}
+                <Box>
+                  <SettingTitle
+                    number="01"
+                    title="Article length"
+                    description="How many words are in your article?"
+                  />
+
+                  <Box sx={{ mt: 2.5, ml: { sm: 6 } }}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      name="word_count"
+                      value={formData.word_count}
+                      onChange={handleChange}
+                      slotProps={{
+                        htmlInput: { min: 1 },
+                      }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2.5,
+                          bgcolor: "#FCFBFD",
+                        },
+                      }}
                     />
-                  }
-                  label={
-                    <Box>
-                      <Typography sx={{ fontWeight: 800 }}>
-                        Breaking news
+
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mt: 1,
+                        display: "block",
+                        color: colors.muted,
+                      }}
+                    >
+                      Total number of words
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* EXPERIENCE */}
+                <Box>
+                  <SettingTitle
+                    number="02"
+                    title="Author experience"
+                    description="Years of writing experience"
+                  />
+
+                  <Box sx={{ mt: 3, ml: { sm: 6 } }}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      sx={{ mb: 1 }}
+                    >
+                      <Typography
+                        sx={{
+                          color: colors.purple,
+                          fontSize: 33,
+                          fontWeight: 800,
+                          letterSpacing: "-0.05em",
+                        }}
+                      >
+                        {formData.author_experience_years}
+                        <Box
+                          component="span"
+                          sx={{
+                            ml: 1,
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: colors.muted,
+                            letterSpacing: 0,
+                          }}
+                        >
+                          years
+                        </Box>
                       </Typography>
 
-                      <Typography variant="body2" color="text.secondary">
-                        Mark whether the article is an urgent breaking news
-                        story.
+                      <Typography
+                        variant="caption"
+                        sx={{ color: colors.muted }}
+                      >
+                        0–40 years
                       </Typography>
-                    </Box>
-                  }
-                />
-              </Paper>
+                    </Stack>
+
+                    <Slider
+                      value={Number(formData.author_experience_years)}
+                      onChange={handleExperienceChange}
+                      min={0}
+                      max={40}
+                      step={1}
+                      marks={[
+                        { value: 0, label: "0" },
+                        { value: 10, label: "10" },
+                        { value: 20, label: "20" },
+                        { value: 30, label: "30" },
+                        { value: 40, label: "40" },
+                      ]}
+                      sx={{
+                        color: colors.purple,
+                        "& .MuiSlider-thumb": {
+                          width: 18,
+                          height: 18,
+                          bgcolor: "#fff",
+                          border: `4px solid ${colors.purple}`,
+                          boxShadow: "0 3px 12px rgba(132,96,182,0.2)",
+                        },
+                        "& .MuiSlider-rail": {
+                          bgcolor: "#E9E2F1",
+                          opacity: 1,
+                        },
+                      }}
+                    />
+                  </Box>
+                </Box>
+
+                {/* BREAKING NEWS */}
+                <Box>
+                  <SettingTitle
+                    number="03"
+                    title="Breaking news"
+                    description="Is the article an urgent news story?"
+                  />
+
+                  <Box
+                    sx={{
+                      mt: 2.5,
+                      ml: { sm: 6 },
+                      p: 2.5,
+                      borderRadius: 3,
+                      border: `1px solid ${
+                        formData.is_breaking_news ? "#BDA7DA" : colors.border
+                      }`,
+                      bgcolor: formData.is_breaking_news
+                        ? "#F5EFFB"
+                        : "#FCFBFD",
+                      transition: "all 0.25s",
+                    }}
+                  >
+                    <FormControlLabel
+                      sx={{
+                        width: "100%",
+                        m: 0,
+                        justifyContent: "space-between",
+                      }}
+                      labelPlacement="start"
+                      control={
+                        <Switch
+                          checked={formData.is_breaking_news}
+                          onChange={handleBreakingNewsChange}
+                          sx={{ ml: 2 }}
+                        />
+                      }
+                      label={
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          spacing={1.2}
+                        >
+                          <BoltRounded
+                            sx={{
+                              color: formData.is_breaking_news
+                                ? colors.purple
+                                : "#A8A1B2",
+                            }}
+                          />
+
+                          <Typography sx={{ fontWeight: 700, fontSize: 14 }}>
+                            {formData.is_breaking_news
+                              ? "Breaking news enabled"
+                              : "Regular article"}
+                          </Typography>
+                        </Stack>
+                      }
+                    />
+                  </Box>
+                </Box>
+              </Stack>
 
               {error && (
-                <Alert severity="error" sx={{ borderRadius: 2 }}>
+                <Alert severity="error" sx={{ mt: 4, borderRadius: 2.5 }}>
                   {error}
                 </Alert>
               )}
 
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+              {/* ACTIONS */}
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={1.5}
+                sx={{ mt: 5 }}
+              >
                 <Button
                   fullWidth
-                  size="large"
                   variant="contained"
-                  startIcon={
-                    isPredicting ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : (
-                      <Bolt />
-                    )
-                  }
+                  size="large"
                   disabled={isPredicting || !user}
                   onClick={handlePredict}
+                  endIcon={
+                    isPredicting ? (
+                      <CircularProgress size={18} color="inherit" />
+                    ) : (
+                      <ArrowForwardRounded />
+                    )
+                  }
                   sx={{
-                    py: 1.5,
-                    borderRadius: 3,
-                    fontWeight: 900,
+                    py: 1.6,
+                    borderRadius: 2.5,
+                    bgcolor: colors.darkPurple,
+                    fontWeight: 750,
                     textTransform: "none",
-                    fontSize: "1rem",
+                    fontSize: 15,
+                    boxShadow: "none",
+                    "&:hover": {
+                      bgcolor: colors.purple,
+                      boxShadow: "none",
+                    },
                   }}
                 >
-                  {isPredicting ? "Running model..." : "Run prediction"}
+                  {isPredicting ? "Analyzing..." : "Generate Prediction"}
                 </Button>
 
                 <Button
-                  size="large"
                   variant="outlined"
-                  startIcon={<RestartAlt />}
+                  startIcon={<RestartAltRounded />}
                   onClick={handleReset}
                   sx={{
                     px: 3,
-                    py: 1.5,
-                    borderRadius: 3,
-                    fontWeight: 800,
+                    py: 1.6,
+                    borderRadius: 2.5,
                     textTransform: "none",
+                    fontWeight: 700,
+                    borderColor: colors.border,
+                    color: colors.ink,
+                    "&:hover": {
+                      borderColor: colors.purple,
+                      bgcolor: colors.lavender,
+                    },
                   }}
                 >
                   Reset
                 </Button>
               </Stack>
-            </Stack>
-          </Paper>
+            </Paper>
+          </MotionBox>
 
-          <Paper
-            elevation={0}
-            sx={{
-              position: "relative",
-              overflow: "hidden",
-              minHeight: 480,
-              p: { xs: 3, md: 4 },
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              borderRadius: 4,
-              border: "1px solid",
-              borderColor: predictedViews !== null ? "primary.main" : "divider",
-              bgcolor: "background.paper",
-            }}
+          {/* RIGHT — PREDICTION RESULT */}
+          <MotionBox
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.25, duration: 0.6 }}
           >
             <Box
               sx={{
-                position: "absolute",
-                width: 230,
-                height: 230,
-                borderRadius: "50%",
-                bgcolor: "action.hover",
-                top: -100,
-                right: -90,
-              }}
-            />
-
-            <Box
-              sx={{
                 position: "relative",
-                zIndex: 1,
-                textAlign: "center",
+                height: "100%",
+                minHeight: 590,
+                borderRadius: 4,
+                overflow: "hidden",
+                background:
+                  "linear-gradient(145deg, #292038 0%, #49345F 55%, #76579B 100%)",
+                color: "#fff",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
-              {predictedViews === null ? (
-                <>
+              {/* DECORATIVE GLOW */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  width: 400,
+                  height: 400,
+                  borderRadius: "50%",
+                  background:
+                    "radial-gradient(circle, rgba(194,150,255,0.24), transparent 70%)",
+                  top: -130,
+                  right: -170,
+                  pointerEvents: "none",
+                }}
+              />
+
+              <Box
+                sx={{
+                  position: "absolute",
+                  width: 350,
+                  height: 350,
+                  borderRadius: "50%",
+                  background:
+                    "radial-gradient(circle, rgba(165,112,222,0.18), transparent 70%)",
+                  bottom: -170,
+                  left: -130,
+                  pointerEvents: "none",
+                }}
+              />
+
+              {/* PANEL HEADER */}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{
+                  position: "relative",
+                  p: { xs: 3, md: 4 },
+                }}
+              >
+                <Stack direction="row" spacing={1.2} alignItems="center">
+                  <PsychologyRounded sx={{ color: "#D6B8FC" }} />
+
+                  <Typography
+                    sx={{
+                      fontWeight: 750,
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
+                    Prediction Studio
+                  </Typography>
+                </Stack>
+
+                <Chip
+                  label={predictedViews !== null ? "COMPLETE" : "AI MODEL"}
+                  size="small"
+                  sx={{
+                    bgcolor: "rgba(255,255,255,0.11)",
+                    color: "#F1E5FF",
+                    border: "1px solid rgba(255,255,255,0.14)",
+                    fontWeight: 800,
+                    fontSize: 10,
+                    letterSpacing: 1,
+                  }}
+                />
+              </Stack>
+
+              {/* MAIN VISUALIZATION */}
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                spacing={3}
+                sx={{
+                  position: "relative",
+                  flex: 1,
+                  px: 3,
+                  py: 5,
+                  textAlign: "center",
+                }}
+              >
+                <MotionBox
+                  animate={{
+                    scale: predictedViews !== null ? [0.9, 1.05, 1] : 1,
+                  }}
+                  transition={{ duration: 0.6 }}
+                  sx={{
+                    position: "relative",
+                    width: 190,
+                    height: 190,
+                    display: "grid",
+                    placeItems: "center",
+                  }}
+                >
                   <Box
                     sx={{
-                      width: 90,
-                      height: 90,
-                      mx: "auto",
-                      mb: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      position: "absolute",
+                      inset: 0,
                       borderRadius: "50%",
-                      bgcolor: "action.hover",
-                      color: "primary.main",
+                      border: "1px solid rgba(230,205,255,0.25)",
                     }}
-                  >
-                    <TrendingUp sx={{ fontSize: 48 }} />
-                  </Box>
-
-                  <Typography variant="h4" sx={{ fontWeight: 900 }}>
-                    Ready to predict
-                  </Typography>
-
-                  <Typography
-                    color="text.secondary"
-                    sx={{
-                      mt: 2,
-                      maxWidth: 400,
-                      mx: "auto",
-                      lineHeight: 1.8,
-                    }}
-                  >
-                    Complete the article data and press Run Prediction to
-                    receive the model result.
-                  </Typography>
-                </>
-              ) : (
-                <>
-                  <Chip
-                    icon={<AutoAwesome />}
-                    label="Prediction complete"
-                    color="success"
-                    sx={{ mb: 3 }}
                   />
 
-                  <Typography
-                    variant="overline"
-                    color="text.secondary"
+                  <Box
                     sx={{
-                      fontWeight: 800,
-                      letterSpacing: "0.14em",
+                      position: "absolute",
+                      inset: 20,
+                      borderRadius: "50%",
+                      border: "1px dashed rgba(230,205,255,0.28)",
+                    }}
+                  />
+
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      inset: 40,
+                      borderRadius: "50%",
+                      bgcolor: "rgba(232,205,255,0.12)",
+                      display: "grid",
+                      placeItems: "center",
+                      boxShadow: "0 0 55px rgba(183,130,240,0.17)",
                     }}
                   >
-                    Estimated article views
-                  </Typography>
+                    {predictedViews !== null ? (
+                      <TrendingUpRounded sx={{ fontSize: 52 }} />
+                    ) : (
+                      <AutoAwesomeRounded sx={{ fontSize: 52 }} />
+                    )}
+                  </Box>
+                </MotionBox>
 
-                  <Typography
-                    sx={{
-                      my: 2,
-                      fontSize: {
-                        xs: "4rem",
-                        md: "6rem",
-                      },
-                      fontWeight: 950,
-                      lineHeight: 1,
-                      color: "primary.main",
-                    }}
+                {predictedViews === null ? (
+                  <MotionBox
+                    key="ready"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
                   >
-                    {predictedViews.toLocaleString()}
-                  </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: { xs: 28, md: 35 },
+                        fontWeight: 800,
+                        letterSpacing: "-0.05em",
+                      }}
+                    >
+                      Ready to explore?
+                    </Typography>
 
-                  <Typography variant="h6" sx={{ fontWeight: 800 }}>
-                    predicted views
-                  </Typography>
-
-                  <Typography
-                    color="text.secondary"
-                    sx={{
-                      mt: 2,
-                      maxWidth: 420,
-                      mx: "auto",
-                      lineHeight: 1.8,
-                    }}
+                    <Typography
+                      sx={{
+                        mt: 2,
+                        maxWidth: 350,
+                        mx: "auto",
+                        color: "rgba(255,255,255,0.68)",
+                        lineHeight: 1.8,
+                      }}
+                    >
+                      Adjust your article parameters and generate a prediction
+                      to discover its estimated reach.
+                    </Typography>
+                  </MotionBox>
+                ) : (
+                  <MotionBox
+                    key="result"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
                   >
-                    This value was calculated by the Linear Regression model
-                    trained on your article dataset.
-                  </Typography>
+                    <Stack
+                      direction="row"
+                      spacing={0.8}
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <CheckCircleOutlineRounded
+                        sx={{
+                          fontSize: 18,
+                          color: "#D9F5D9",
+                        }}
+                      />
 
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      mt: 4,
-                      p: 2,
-                      borderRadius: 3,
-                      bgcolor: "action.hover",
-                    }}
-                  >
-                    <Stack spacing={1}>
-                      <Typography variant="body2">
-                        <strong>Words:</strong>{" "}
-                        {Number(formData.word_count).toLocaleString()}
-                      </Typography>
-
-                      <Typography variant="body2">
-                        <strong>Breaking news:</strong>{" "}
-                        {formData.is_breaking_news ? "Yes" : "No"}
-                      </Typography>
-
-                      <Typography variant="body2">
-                        <strong>Author experience:</strong>{" "}
-                        {formData.author_experience_years} years
+                      <Typography
+                        variant="overline"
+                        sx={{
+                          color: "#DED0EE",
+                          letterSpacing: 2,
+                          fontWeight: 700,
+                        }}
+                      >
+                        PREDICTION COMPLETE
                       </Typography>
                     </Stack>
-                  </Paper>
-                </>
-              )}
+
+                    <Typography
+                      sx={{
+                        my: 2,
+                        fontSize: {
+                          xs: "3.7rem",
+                          md: "5rem",
+                        },
+                        fontWeight: 800,
+                        letterSpacing: "-0.07em",
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      {Number(predictedViews).toLocaleString("en-US")}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        fontSize: 18,
+                        fontWeight: 700,
+                      }}
+                    >
+                      Estimated Views
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        mt: 2,
+                        color: "rgba(255,255,255,0.65)",
+                        maxWidth: 330,
+                        mx: "auto",
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      A machine-learning estimate based on your article
+                      characteristics.
+                    </Typography>
+                  </MotionBox>
+                )}
+              </Stack>
+
+              {/* RESULT FOOTER */}
+              <Box
+                sx={{
+                  position: "relative",
+                  mx: { xs: 3, md: 4 },
+                  mb: { xs: 3, md: 4 },
+                  p: 2.5,
+                  borderRadius: 3,
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  bgcolor: "rgba(255,255,255,0.07)",
+                }}
+              >
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 2 }}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "#D5C2EA",
+                      fontWeight: 750,
+                      letterSpacing: 1.2,
+                    }}
+                  >
+                    CURRENT CONFIGURATION
+                  </Typography>
+
+                  <VisibilityOutlined
+                    sx={{
+                      color: "#D5C2EA",
+                      fontSize: 18,
+                    }}
+                  />
+                </Stack>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                    gap: 2,
+                  }}
+                >
+                  {[
+                    {
+                      label: "WORDS",
+                      value: Number(formData.word_count || 0).toLocaleString(),
+                    },
+                    {
+                      label: "EXPERIENCE",
+                      value: `${formData.author_experience_years} yrs`,
+                    },
+                    {
+                      label: "BREAKING",
+                      value: formData.is_breaking_news ? "Yes" : "No",
+                    },
+                  ].map((item) => (
+                    <Box key={item.label}>
+                      <Typography
+                        sx={{
+                          fontSize: 10,
+                          letterSpacing: 1,
+                          color: "#C9B5DB",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {item.label}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          mt: 0.5,
+                          fontSize: { xs: 14, md: 17 },
+                          fontWeight: 750,
+                        }}
+                      >
+                        {item.value}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
             </Box>
-          </Paper>
+          </MotionBox>
         </Box>
+
+        {/* INFORMATION SECTION */}
+        <MotionBox
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          sx={{
+            mt: { xs: 7, md: 10 },
+            p: { xs: 3, md: 5 },
+            borderRadius: 4,
+            bgcolor: "#F1ECF8",
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            alignItems: { xs: "flex-start", md: "center" },
+            gap: 3,
+          }}
+        >
+          <Box>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <PsychologyRounded sx={{ color: colors.purple }} />
+
+              <Typography
+                variant="overline"
+                sx={{
+                  color: colors.purple,
+                  fontWeight: 800,
+                  letterSpacing: 1.5,
+                }}
+              >
+                BEHIND THE PREDICTION
+              </Typography>
+            </Stack>
+
+            <Typography
+              sx={{
+                mt: 1.5,
+                fontSize: { xs: 26, md: 34 },
+                fontWeight: 800,
+                letterSpacing: "-0.05em",
+              }}
+            >
+              A little data. A new perspective.
+            </Typography>
+
+            <Typography
+              sx={{
+                mt: 1.2,
+                color: colors.muted,
+                lineHeight: 1.8,
+                maxWidth: 650,
+              }}
+            >
+              This tool uses a trained Linear Regression model to estimate
+              article views from word count, breaking-news status, and author
+              experience. Results are estimates, not guarantees.
+            </Typography>
+          </Box>
+
+          <Button
+            variant="outlined"
+            endIcon={<ArrowForwardRounded />}
+            onClick={() => navigate("/ml-insights")}
+            sx={{
+              flexShrink: 0,
+              px: 3,
+              py: 1.5,
+              borderRadius: 2.5,
+              color: colors.darkPurple,
+              borderColor: "#CBBADA",
+              fontWeight: 750,
+              textTransform: "none",
+              "&:hover": {
+                borderColor: colors.purple,
+                bgcolor: "rgba(255,255,255,0.55)",
+              },
+            }}
+          >
+            Explore ML Insights
+          </Button>
+        </MotionBox>
       </Container>
     </Box>
   );
 }
-
-export default MLPlaygroundPage;
